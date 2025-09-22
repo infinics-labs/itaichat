@@ -1,155 +1,226 @@
-# Responses starter app
+# ITAI Export Assistant
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 ![NextJS](https://img.shields.io/badge/Built_with-NextJS-blue)
 ![OpenAI API](https://img.shields.io/badge/Powered_by-OpenAI_API-orange)
 
-This repository contains a NextJS starter app built on top of the [Responses API](https://platform.openai.com/docs/api-reference/responses).
-It leverages built-in tools ([web search](https://platform.openai.com/docs/guides/tools-web-search?api-mode=responses) and [file search](https://platform.openai.com/docs/guides/tools-file-search)) and implements a chat interface with multi-turn conversation handling.
+ITAI Export Assistant is an AI-powered chatbot designed to help Turkish companies increase their exports. The assistant guides users through a structured conversation to collect export-related information and provides valuable insights about target markets, competitors, and potential customers.
 
-Features:
+## Features
 
-- Multi-turn conversation handling
-- Streaming responses & tool calls
-- Function calling
-- Display annotations
-- Web search tool configuration
-- Vector store creation & file upload for use with the file search tool
-- MCP server configuration
-- Google Calendar & Gmail integration via first-party connector
+- **Structured Conversation Flow**: 12-phase information collection process
+- **Bilingual Support**: Supports both Turkish and English
+- **Web Search Integration**: Finds real competitors and customers in target markets
+- **Smart Validation**: Validates corporate emails and required information
+- **Export Expertise**: Specialized in Turkish export processes
+- **Real-time Progress Tracking**: Shows completion status for each phase
 
-This app is meant to be used as a starting point to build a conversational assistant that you can customize to your needs.
+## Tech Stack
 
-## How to use
+- **Framework**: Next.js 15
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **State Management**: Zustand
+- **AI Integration**: OpenAI GPT-4
+- **Deployment**: Vercel
 
-1. **Set up the OpenAI API:**
+## Getting Started
 
-   - If you're new to the OpenAI API, [sign up for an account](https://platform.openai.com/signup).
-   - Follow the [Quickstart](https://platform.openai.com/docs/quickstart) to retrieve your API key.
+### Prerequisites
 
-2. **Set the OpenAI API key:**
+- Node.js 18+ 
+- npm or yarn
+- OpenAI API key
 
-   2 options:
+### Installation
 
-   - Set the `OPENAI_API_KEY` environment variable [globally in your system](https://platform.openai.com/docs/libraries#create-and-export-an-api-key)
-   - Set the `OPENAI_API_KEY` environment variable in the project: Create a `.env` file at the root of the project and add the following line (see `.env.example` for reference):
+1. Clone the repository:
+```bash
+git clone <your-repo-url>
+cd itai-export-assistant
+```
 
-   ```bash
-   OPENAI_API_KEY=<your_api_key>
-   ```
+2. Install dependencies:
+```bash
+npm install
+```
 
-3. **Clone the Repository:**
+3. Set up environment variables:
+```bash
+# Copy the example environment file
+cp .env.example .env.local
 
-   ```bash
-   git clone https://github.com/openai/openai-responses-starter-app.git
-   ```
+# Add your OpenAI API key to .env.local
+OPENAI_API_KEY=your_openai_api_key_here
+```
 
-4. **Install dependencies:**
+### Development
 
-   Run in the project root:
+Run the development server:
+```bash
+npm run dev
+```
 
-   ```bash
-   npm install
-   ```
+Open [http://localhost:3000](http://localhost:3000) to see the application.
 
-5. **Run the app:**
+### Building for Production
 
-   ```bash
-   npm run dev
-   ```
+```bash
+npm run build
+npm run start
+```
 
-   The app will be available at [`http://localhost:3000`](http://localhost:3000).
+## Deployment on Vercel
 
-## Tools
+### Quick Deploy
 
-This starter app shows how to use built-in tools, MCP servers, and first-party connectors with the Responses API.
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=<your-repo-url>)
 
-You can configure these tools directly from the UI, but some tools require additional setup (e.g. Google OAuth).
+### Manual Deployment
 
-### Built-in tools
+1. **Connect to Vercel**:
+   - Push your code to GitHub
+   - Connect your GitHub repository to Vercel
+   - Vercel will automatically deploy your application
 
-We have several out-of-the-box tools available to use with the Responses API. This demo app implements and allows to configure directly from the UI the following tools:
+2. **Set Environment Variables** in your Vercel dashboard:
+   - `OPENAI_API_KEY`: Your OpenAI API key
+   - `GOOGLE_CLIENT_ID`: (Optional) For Google integration
+   - `GOOGLE_CLIENT_SECRET`: (Optional) For Google integration  
+   - `NEXTAUTH_SECRET`: Random secret for NextAuth
 
-- File search, to allow the model to access your files in a vector store
-- Web search, to allow the model to search the web
-- Code interpreter, to allow the model to run Python code to solve problems
+3. **Deploy**:
+```bash
+npm run build
+npx vercel --prod
+```
 
-Other built-in tools, such as computer use or image generation, are not implemented in this demo app.
+## Conversation Flow
 
-### MCP servers
+The assistant follows a 12-phase conversation flow:
 
-The UI allows you to configure a public MCP server to use with the Responses API. If you want to use an MCP server that requires authentication, feel free to update `lib/tools/tools.ts` to add your own logic. You can use the Google connector integration as an example of how to use access tokens.
+1. **Product Information** - What product to export
+2. **Target Country** - Which country to target  
+3. **GTIP Code** - Product classification code
+4. **Sales Channels** - Current distribution channels
+5. **Website** - Company website
+6. **Name** - Contact person name
+7. **Email** - Corporate email (validated)
+8. **Phone** - Contact phone number
+9. **Keywords** - B2B search terms
+10. **Competitors** - Market competitors (web search)
+11. **Customers** - Potential customers (web search)
+12. **Demo** - Meeting scheduling and summary
 
-### Custom functions
+## Example Usage
 
-This demo app comes with example functions, `get_weather` and `get_joke`. You can add your own functions to the `config/functions.ts` file.
+### Turkish Conversation
+```
+User: Merhaba
+Assistant: Merhaba! Ben ITAI Export Assistant'ım. Türk şirketlerinin ihracatında uzman bir danışmanım. 
+          Hangi ürününüzün ihracatını artırmak istiyorsunuz?
 
-### Google integration
+User: Karpuz
+Assistant: Harika! Karpuz ihracatını artırmak istiyorsunuz. 
+          Hangi ülkeye bu ürünü satmak istiyorsunuz?
+```
 
-This app shows how you can use OpenAI's 1P connectors to integrate with Google and let the assistant read your calendar and email inbox. The app performs a secure OAuth flow in your browser, stores tokens per session, and attaches the Google connector to the Responses API tools list with your access token.
+### English Conversation
+```
+User: Hello
+Assistant: Hello! I'm ITAI Export Assistant. I'm an expert consultant in Turkish companies' exports.
+          Which product's export do you want to increase?
 
-To test this instructions, read the instructions below to set up the Google OAuth 2.0 client and enable the Google Calendar and Gmail APIs.
+User: Watermelon
+Assistant: Great! You want to increase watermelon exports.
+          Which country do you want to sell this product to?
+```
 
-Learn more about the available 1P connectors in [our documentation](https://platform.openai.com/docs/guides/tools-connectors-mcp#connectors).
+## Configuration
 
-#### Setup (Google OAuth)
+### Web Search
 
-1. Create an OAuth 2.0 client for a Web application in your Google Cloud project (see [documentation](https://developers.google.com/identity/protocols/oauth2) for accessing Google APIs with Oauth 2.0 docs).
+Web search is enabled by default to find competitors and customers. The assistant uses this to provide real, up-to-date market information.
 
-   - In Google Cloud, go to APIs & Services > Google Auth platform > Clients > Create client > **Web**.
-   - Add your redirect URI: `http://localhost:3000/api/google/callback`.
-   - Copy the client ID. Create and copy a client secret.
+### Language Detection
 
-2. Enable APIs in the same project:
+The assistant automatically detects the user's language (Turkish/English) and responds accordingly throughout the conversation.
 
-   - Google Calendar API
-   - Gmail API
+### Corporate Email Validation
 
-3. Configure data access scopes in Google Auth Platform to match what you need. This demo uses:
+The system only accepts corporate email addresses and rejects personal email services (Gmail, Hotmail, Yahoo, Outlook).
 
-   - `openid`
-   - `email`
-   - `profile`
-   - `https://www.googleapis.com/auth/calendar.events`
-   - `https://www.googleapis.com/auth/gmail.modify`
+## API Endpoints
 
-4. Create `.env.local` (you can copy `.env.example`) at the project root and add:
+- `/api/turn_response` - Main conversation endpoint with state tracking
+- `/api/functions/*` - Function calling endpoints
+- `/api/google/*` - Google integration endpoints (optional)
+- `/api/vector_stores/*` - File search endpoints (optional)
 
-   ```bash
-   GOOGLE_CLIENT_ID="your-google-client-id"
-   GOOGLE_CLIENT_SECRET="your-google-client-secret"
-   GOOGLE_REDIRECT_URI="http://localhost:3000/api/google/callback"
-   ```
+## Environment Variables
 
-## Demo flows
+Create a `.env.local` file with the following variables:
 
-### Try web search + code interpreter
+```bash
+# Required
+OPENAI_API_KEY=your_openai_api_key_here
 
-After enabling web search and code interpreter in the UI, ask the model:
+# Optional - Google Integration
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_REDIRECT_URI=http://localhost:3000/api/google/callback
 
-> "Can you fetch the temperatures in SF for August and then generate a chart plotting them?"
+# Optional - Authentication
+NEXTAUTH_SECRET=your_nextauth_secret_here
+NEXTAUTH_URL=http://localhost:3000
 
-The model should use the web search tool to fetch the temperatures and then use the code interpreter tool to generate a chart which will be displayed in the UI.
+# Optional - Development
+NODE_ENV=development
+```
 
-### Try file search
+## Project Structure
 
-- Save PDF files, for examples blog posts (you can use [this one](https://openai.com/index/new-tools-and-features-in-the-responses-api/), then print the page and use the "Save as PDF" option)
-- Create a new vector store and upload the PDF file(s)
-- Enable file search and ask the model a question which can be answered by the PDF file(s), for example:
-  > "What's new with the Responses API?"
-- The model should use the file search tool to find the relevant information in the PDF file(s) and then display the response
-
-### Try the Google integration
-
-- Click "Connect Google Integration" in the UI and complete the OAuth flow; you will be redirected back with `connected=1`.
-- Ask the assistant to perform tasks—for example, "Show my next five calendar events," or, "Summarize the most recent wirecutter emails".
-- The app will attach Google Calendar and Gmail connectors (via MCP) to the tools list using your access token and stream results back to the UI.
-- To invalidate the OAuth session, clear the app cookies (Chrome DevTools > Application > Storage > Cookies). If you only clear `gc_access_token`, the app will use the `gc_refresh_token` to refresh without re-authenticating.
+```
+├── app/
+│   ├── api/                 # API routes
+│   ├── globals.css         # Global styles
+│   ├── layout.tsx          # Root layout
+│   └── page.tsx            # Home page
+├── components/             # React components
+│   ├── ui/                 # UI components
+│   ├── chat.tsx            # Main chat interface
+│   └── assistant.tsx       # Assistant logic
+├── config/                 # Configuration files
+│   ├── constants.ts        # App constants and prompts
+│   └── tools-list.ts       # Available tools
+├── lib/                    # Utility libraries
+├── stores/                 # State management
+│   ├── useConversationStore.ts     # Chat state
+│   ├── useExportAssistantStore.ts  # Export flow state
+│   └── useToolsStore.ts            # Tools configuration
+├── .env.example           # Environment variables template
+├── .gitignore            # Git ignore rules
+├── package.json          # Dependencies
+├── vercel.json           # Vercel configuration
+└── README.md             # This file
+```
 
 ## Contributing
 
-You are welcome to open issues or submit PRs to improve this app, however, please note that we may not review all suggestions.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support
+
+For support and questions, please contact the development team or create an issue in the GitHub repository.
+
+---
+
+Built with ❤️ for Turkish exporters using OpenAI's Responses API and Next.js.
