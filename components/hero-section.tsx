@@ -2,13 +2,45 @@
 
 import { AIChatInterface } from "@/components/ai-chat-interface"
 import { useRouter } from "next/navigation"
+import useConversationStore from "@/stores/useConversationStore"
+import { Item, processMessages } from "@/lib/assistant"
 
 export function HeroSection() {
   const router = useRouter()
+  const { addConversationItem, addChatMessage, setAssistantLoading } = useConversationStore()
 
-  const handleMessageSent = () => {
-    // Redirect to chat page when user sends a message
-    router.push('/chat')
+  const handleMessageSent = async (message: string) => {
+    if (!message.trim()) return
+
+    // Create the message items
+    const userItem: Item = {
+      type: "message",
+      role: "user",
+      content: [{ type: "input_text", text: message.trim() }],
+    }
+    const userMessage: any = {
+      role: "user",
+      content: message.trim(),
+    }
+
+    try {
+      // Add the message to the conversation
+      setAssistantLoading(true)
+      addConversationItem(userMessage)
+      addChatMessage(userItem)
+      
+      // Start processing the message
+      processMessages().catch((error) => {
+        console.error("Error processing message:", error)
+        setAssistantLoading(false)
+      })
+
+      // Redirect to chat page
+      router.push('/chat')
+    } catch (error) {
+      console.error("Error sending message:", error)
+      setAssistantLoading(false)
+    }
   }
 
   return (

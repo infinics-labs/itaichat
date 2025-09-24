@@ -2,6 +2,62 @@ import { getDeveloperPrompt, MODEL } from "@/config/constants";
 import { getTools } from "@/lib/tools/tools";
 import OpenAI from "openai";
 
+// Helper function to detect language from text
+function detectLanguage(text: string): 'turkish' | 'english' {
+  // Turkish-specific words and patterns
+  const turkishWords = [
+    'merhaba', 'selam', 'nasılsın', 'nasıl', 'naber', 'iyi', 'güzel', 'ürün', 'ürünü', 'ürününüz',
+    'ihracat', 'ihracatı', 'satmak', 'satış', 'satıyorum', 'şirket', 'firma', 'ülke', 'hangi',
+    'nerede', 'ne', 'var', 'yok', 'evet', 'hayır', 'teşekkür', 'teşekkürler', 'sağol', 'sağolun',
+    'isim', 'ad', 'adım', 'ben', 'biz', 'sen', 'siz', 'o', 'onlar', 'bu', 'şu', 'ile', 'için',
+    'ama', 'fakat', 'çünkü', 'eğer', 'daha', 'en', 'çok', 'az', 'büyük', 'küçük', 'yeni', 'eski',
+    'üretime', 'üretiyoruz', 'üretim', 'fabrika', 'imalat', 'sanayi', 'ticaret', 'pazarlama',
+    'müşteri', 'alıcı', 'ithalatçı', 'dağıtıcı', 'distribütör'
+  ];
+  
+  const englishWords = [
+    'hello', 'hi', 'how', 'what', 'where', 'when', 'why', 'product', 'export', 'sell', 'selling',
+    'company', 'business', 'country', 'which', 'there', 'here', 'yes', 'no', 'thank', 'thanks',
+    'name', 'my', 'our', 'your', 'his', 'her', 'their', 'this', 'that', 'with', 'for',
+    'but', 'because', 'if', 'more', 'most', 'many', 'few', 'big', 'small', 'new', 'old',
+    'production', 'produce', 'manufacturing', 'factory', 'industry', 'trade', 'marketing',
+    'customer', 'buyer', 'importer', 'distributor',
+    // Common products and countries in English
+    'pencil', 'pen', 'book', 'paper', 'textile', 'fabric', 'food', 'fruit', 'vegetable',
+    'france', 'germany', 'spain', 'italy', 'usa', 'america', 'england', 'britain', 'canada',
+    'australia', 'japan', 'china', 'india', 'brazil', 'mexico', 'russia', 'poland', 'netherlands',
+    'water', 'oil', 'sugar', 'rice', 'wheat', 'corn', 'metal', 'plastic', 'wood', 'cotton',
+    'machine', 'equipment', 'tool', 'software', 'technology', 'chemical', 'medicine', 'furniture'
+  ];
+  
+  const lowerText = text.toLowerCase();
+  let turkishScore = 0;
+  let englishScore = 0;
+  
+  // Count Turkish-specific characters
+  const turkishChars = /[çğıöşüÇĞIİÖŞÜ]/g;
+  const turkishCharMatches = lowerText.match(turkishChars);
+  if (turkishCharMatches) {
+    turkishScore += turkishCharMatches.length * 2; // Weight Turkish characters highly
+  }
+  
+  // Count word matches
+  turkishWords.forEach(word => {
+    if (lowerText.includes(word)) {
+      turkishScore += 1;
+    }
+  });
+  
+  englishWords.forEach(word => {
+    if (lowerText.includes(word)) {
+      englishScore += 1;
+    }
+  });
+  
+  // Default to Turkish if scores are equal (since it's a Turkish export platform)
+  return turkishScore >= englishScore ? 'turkish' : 'english';
+}
+
 // Helper function to extract conversation state from messages
 function extractConversationState(messages: any[]) {
   const state: any = {
@@ -16,8 +72,22 @@ function extractConversationState(messages: any[]) {
     phone: undefined,
     keywords: undefined,
     competitors: [],
-    customers: []
+    customers: [],
+    detectedLanguage: 'turkish' // Default to Turkish
   };
+
+  // Collect all user messages for language detection
+  const userMessages = messages.filter(msg => msg.role === "user" && msg.content);
+  
+  // Detect language from all user messages combined
+  if (userMessages.length > 0) {
+    const allUserText = userMessages.map(msg => msg.content).join(" ");
+    state.detectedLanguage = detectLanguage(allUserText);
+    console.log("🌍 Language Detection:", {
+      allUserText,
+      detectedLanguage: state.detectedLanguage
+    });
+  }
 
   // Analyze messages to determine current state
   for (const message of messages) {

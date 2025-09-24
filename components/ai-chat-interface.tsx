@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/language-context"
 
 interface AIChatInterfaceProps {
-  onMessageSent?: () => void
+  onMessageSent?: (message: string) => void
 }
 
 export function AIChatInterface({ onMessageSent }: AIChatInterfaceProps) {
@@ -19,21 +19,19 @@ export function AIChatInterface({ onMessageSent }: AIChatInterfaceProps) {
   const { language } = useLanguage()
 
   const handleStartChat = () => {
-    // Store the input in sessionStorage to pre-fill in chat
-    if (input.trim()) {
-      sessionStorage.setItem('initialProduct', input.trim())
-    }
+    if (!input.trim()) return
     
     // Call the onMessageSent callback if provided
     if (onMessageSent) {
-      onMessageSent()
+      onMessageSent(input.trim())
     } else {
-      // Fallback: Navigate to the chat (scroll to hero section)
-      const heroElement = document.querySelector('#hero');
-      if (heroElement) {
-        heroElement.scrollIntoView({ behavior: 'smooth' });
-      }
+      // Fallback: Store the input and navigate to chat
+      sessionStorage.setItem('initialProduct', input.trim())
+      router.push('/chat')
     }
+    
+    // Clear the input
+    setInput("")
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
