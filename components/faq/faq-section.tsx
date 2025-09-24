@@ -322,7 +322,7 @@ export function FAQSection() {
             <CardContent className="p-8 lg:p-12">
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Still have questions?</h3>
               <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                Can't find the answer you're looking for? Our expert team is here to help you understand how ITAI can
+                Can&apos;t find the answer you&apos;re looking for? Our expert team is here to help you understand how ITAI can
                 transform your export business.
               </p>
               <Button

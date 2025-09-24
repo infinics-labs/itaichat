@@ -3,7 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Instagram, Linkedin, Youtube, Menu } from "lucide-react"
+import { Instagram, Linkedin, Youtube } from "lucide-react"
 
 export function Header() {
   return (

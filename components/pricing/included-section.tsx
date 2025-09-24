@@ -25,7 +25,7 @@ export function IncludedSection() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-            What's Included with
+            What&apos;s Included with
             <span className="bg-gradient-to-r from-orange-500 to-purple-600 bg-clip-text text-transparent">
               {" "}
               Every Plan

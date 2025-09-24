@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Sparkles, ArrowRight, Globe, Instagram, Linkedin, Youtube } from "lucide-react"
 import Image from "next/image"
-import Link from "next/link"
 
 export function Footer() {
   return (

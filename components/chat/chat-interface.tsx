@@ -14,7 +14,7 @@ import { Item, processMessages } from "@/lib/assistant";
 
 export function ChatInterface() {
   const [input, setInput] = useState("");
-  const messagesEndRef = useRef(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const { 
     chatMessages, 
     addConversationItem, 
@@ -43,27 +43,29 @@ export function ChatInterface() {
   const formatMessages = () => {
     if (!chatMessages) return [];
     
-    return chatMessages.map((item, index) => {
-      if (item.type === "message") {
-        let content = "";
-        if (item.content && Array.isArray(item.content)) {
-          // Extract text from content array
-          content = item.content
-            .map(c => c.text || "")
-            .join(" ")
-            .trim();
-        } else if (typeof item.content === "string") {
-          content = item.content;
+    return chatMessages
+      .map((item, index) => {
+        if (item.type === "message") {
+          let content = "";
+          if (item.content && Array.isArray(item.content)) {
+            // Extract text from content array
+            content = item.content
+              .map(c => c.text || "")
+              .join(" ")
+              .trim();
+          } else if (typeof item.content === "string") {
+            content = item.content;
+          }
+          
+          return {
+            id: index,
+            role: item.role,
+            content: content
+          };
         }
-        
-        return {
-          id: index,
-          role: item.role,
-          content: content
-        };
-      }
-      return null;
-    }).filter(Boolean);
+        return null;
+      })
+      .filter((message): message is { id: number; role: "user" | "assistant"; content: string } => message !== null);
   };
 
   const handleSend = async () => {
@@ -91,7 +93,7 @@ export function ChatInterface() {
     }
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();

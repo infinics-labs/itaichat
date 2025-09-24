@@ -40,7 +40,7 @@ export function ProvenResultsSection() {
             Proven Results That Speak for Themselves
           </h2>
           <p className="text-xl text-white/90 max-w-3xl mx-auto">
-            Join thousands of exporters who have transformed their business with ITAI's AI-powered solutions
+            Join thousands of exporters who have transformed their business with ITAI&apos;s AI-powered solutions
           </p>
         </div>
 

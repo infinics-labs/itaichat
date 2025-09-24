@@ -3,14 +3,21 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, X } from "lucide-react";
+import { Send } from "lucide-react";
+
+interface ChatInputProps {
+  onSendMessage: (message: string) => void;
+  placeholder?: string;
+  disabled?: boolean;
+  suggestions?: string[];
+}
 
 export function ChatInput({
   onSendMessage,
   placeholder = "Type your message...",
   disabled = false,
   suggestions = []
-}) {
+}: ChatInputProps) {
   const [input, setInput] = useState("");
 
   const handleSend = () => {
@@ -20,14 +27,14 @@ export function ChatInput({
     }
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
   };
 
-  const handleSuggestionClick = (suggestion) => {
+  const handleSuggestionClick = (suggestion: string) => {
     setInput(suggestion);
     onSendMessage(suggestion);
   };

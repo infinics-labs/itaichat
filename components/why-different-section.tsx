@@ -30,7 +30,7 @@ export function WhyDifferentSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl lg:text-5xl font-bold text-gray-900 mb-6">
-            Why We're Different
+            Why We&apos;re Different
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             A clearer, faster way to scale global sales — powered by AI, not guesswork.
