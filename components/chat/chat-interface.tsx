@@ -10,7 +10,10 @@ import { TypingIndicator } from "./typing-indicator";
 
 // Import the existing chat logic
 import useConversationStore from "@/stores/useConversationStore";
+import useExportAssistantStore from "@/stores/useExportAssistantStore";
 import { Item, processMessages } from "@/lib/assistant";
+import { InformationCollectionBar } from "@/components/information-collection-bar";
+import { analyzeConversationMessages } from "@/lib/conversation-analyzer";
 
 export function ChatInterface() {
   const [input, setInput] = useState("");
@@ -23,6 +26,19 @@ export function ChatInterface() {
     isAssistantLoading,
     resetConversation 
   } = useConversationStore();
+
+  // Analyze conversation messages to get real-time progress
+  const conversationData = analyzeConversationMessages(chatMessages);
+  const progressData = {
+    hasProduct: conversationData.hasProduct,
+    hasTargetMarket: conversationData.hasTargetMarket,
+    hasGtipCode: conversationData.hasGtipCode,
+    hasSalesChannels: conversationData.hasSalesChannels,
+    hasContactInfo: conversationData.hasContactInfo,
+    hasKeywords: conversationData.hasKeywords,
+    hasCompetitors: conversationData.hasCompetitors,
+    hasCustomers: conversationData.hasCustomers,
+  };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -183,6 +199,9 @@ export function ChatInterface() {
             </div>
           </div>
         </CardContent>
+
+        {/* Progress Bar at Bottom */}
+        <InformationCollectionBar {...progressData} />
       </Card>
     </div>
   );

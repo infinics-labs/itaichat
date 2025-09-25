@@ -77,6 +77,16 @@ interface ExportAssistantState {
   getNextPhase: () => ConversationPhase;
   isPhaseComplete: (phase: ConversationPhase) => boolean;
   getMissingInfo: () => string[];
+  getProgressBarData: () => {
+    hasProduct: boolean;
+    hasTargetMarket: boolean;
+    hasGtipCode: boolean;
+    hasSalesChannels: boolean;
+    hasContactInfo: boolean;
+    hasKeywords: boolean;
+    hasCompetitors: boolean;
+    hasCustomers: boolean;
+  };
 }
 
 const useExportAssistantStore = create<ExportAssistantState>((set, get) => ({
@@ -154,6 +164,21 @@ const useExportAssistantStore = create<ExportAssistantState>((set, get) => ({
     if (!collectedInfo.customers) missing.push("Customers");
     
     return missing;
+  },
+
+  getProgressBarData: () => {
+    const { collectedInfo } = get();
+    
+    return {
+      hasProduct: !!collectedInfo.product,
+      hasTargetMarket: !!collectedInfo.targetCountry,
+      hasGtipCode: !!collectedInfo.gtipCode,
+      hasSalesChannels: !!collectedInfo.salesChannels,
+      hasContactInfo: !!(collectedInfo.contactInfo?.name && collectedInfo.contactInfo?.email && collectedInfo.contactInfo?.phone),
+      hasKeywords: !!collectedInfo.keywords,
+      hasCompetitors: !!(collectedInfo.competitors && collectedInfo.competitors.length > 0),
+      hasCustomers: !!(collectedInfo.customers && collectedInfo.customers.length > 0),
+    };
   },
 }));
 
