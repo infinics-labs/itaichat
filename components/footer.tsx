@@ -66,6 +66,7 @@ export function Footer() {
                 width={120}
                 height={40}
                 className="h-10 w-auto mb-6 brightness-0 invert"
+                unoptimized
               />
               <p className="text-gray-400 max-w-md mb-6">
                 Advanced AI assistant powered by cutting-edge technology to help you accomplish tasks more efficiently.

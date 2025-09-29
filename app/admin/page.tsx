@@ -94,6 +94,7 @@ export default function AdminPage() {
                 width={32}
                 height={32}
                 className="rounded-lg sm:size-10"
+                unoptimized
               />
               <div>
                 <span className="text-lg sm:text-xl font-bold text-gray-900">ITAI Admin</span>

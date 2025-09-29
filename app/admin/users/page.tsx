@@ -235,6 +235,7 @@ export default function UsersPage() {
             <div className="flex items-center gap-2 sm:gap-3">
               <Image
                 src="/logo.png"
+                unoptimized
                 alt="ITAI Logo"
                 width={32}
                 height={32}

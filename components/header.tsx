@@ -24,7 +24,31 @@ export function Header() {
           {/* Logo and Social Icons */}
           <div className="flex items-center space-x-6">
             <Link href="/" className="flex items-center">
-              <Image src="/logo.png" alt="ITAI Logo" width={120} height={40} className="h-10 w-auto" />
+              <div className="relative">
+                <Image 
+                  src="/logo.png" 
+                  alt="ITAI Logo" 
+                  width={120} 
+                  height={40} 
+                  className="h-10 w-auto" 
+                  priority
+                  unoptimized
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    const fallback = target.nextElementSibling as HTMLElement;
+                    if (fallback) {
+                      target.style.display = 'none';
+                      fallback.style.display = 'block';
+                    }
+                  }}
+                />
+                <div 
+                  className="hidden text-2xl font-bold bg-gradient-to-r from-orange-500 to-purple-600 bg-clip-text text-transparent"
+                  style={{ display: 'none' }}
+                >
+                  ITAI
+                </div>
+              </div>
             </Link>
 
             {/* Social Icons - Left aligned */}
