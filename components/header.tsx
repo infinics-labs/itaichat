@@ -118,12 +118,12 @@ export function Header() {
               onClick={() => trackCTAClick({
                 page: currentPage,
                 placement: 'header',
-                button_text: 'Get export insights',
+                button_text: 'Get export insights with the ITAI chatbot',
                 destination: '/chat'
               })}
             >
               <Button size="sm" className="bg-gradient-to-r from-orange-500 to-purple-600 hover:from-orange-600 hover:to-purple-700 text-white shadow-lg text-xs lg:text-sm px-3 lg:px-4 py-2 whitespace-nowrap">
-                Get export insights
+                Get export insights with the ITAI chatbot
               </Button>
             </Link>
           </div>
