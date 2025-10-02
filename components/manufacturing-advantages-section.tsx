@@ -11,62 +11,52 @@ export function ManufacturingAdvantagesSection() {
     {
       icon: Factory,
       title: "Manufacturing companies",
-      description: "Manufacturing companies grow exports faster when outreach starts with verified buyers. We shortlist companies that buy products like yours and include decision‑maker emails so your first message lands.",
-      keywords: "b2b business leads"
+      description: "Manufacturing companies grow exports faster when outreach starts with verified buyers. We shortlist companies that buy products like yours and include decision‑maker emails so your first message lands."
     },
     {
       icon: Building,
       title: "Manufacturing companies near me",
-      description: "If you need partnerships or pilots, we map manufacturing companies near me style local intent into a curated list for your state or city. You get nearby prospects, distributors, and suppliers with verified contacts.",
-      keywords: "b2b company search"
+      description: "If you need partnerships or pilots, we map manufacturing companies near me style local intent into a curated list for your state or city. You get nearby prospects, distributors, and suppliers with verified contacts."
     },
     {
       icon: Wrench,
       title: "Industrial companies",
-      description: "Industrial companies use us to reach OEMs and distributors that reorder reliably. We focus on fit, margin, and MOQ so your pipeline feels predictable.",
-      keywords: "prospecting companies"
+      description: "Industrial companies use us to reach OEMs and distributors that reorder reliably. We focus on fit, margin, and MOQ so your pipeline feels predictable."
     },
     {
       icon: Settings,
       title: "Contract manufacturing companies",
-      description: "Contract manufacturing companies keep capacity full by targeting buyers who outsource consistently. We highlight part families, certifications, and lot sizes to match your shop's strengths.",
-      keywords: "b2b business leads"
+      description: "Contract manufacturing companies keep capacity full by targeting buyers who outsource consistently. We highlight part families, certifications, and lot sizes to match your shop's strengths."
     },
     {
       icon: Factory,
       title: "Industrial supply companies",
-      description: "Industrial supply companies win repeat business when catalogs meet buyers who reorder on schedule. We filter by footprint, SKU mix, and re‑order patterns to prioritize high‑value accounts.",
-      keywords: "prospecting companies"
+      description: "Industrial supply companies win repeat business when catalogs meet buyers who reorder on schedule. We filter by footprint, SKU mix, and re‑order patterns to prioritize high‑value accounts."
     },
     {
       icon: Settings,
       title: "Machining manufacturing companies",
-      description: "Machining manufacturing companies selling CNC and precision parts reach better buyers with role‑verified contacts. We flag tolerances, materials, and volumes so your message speaks the buyer's language.",
-      keywords: "b2b company search"
+      description: "Machining manufacturing companies selling CNC and precision parts reach better buyers with role‑verified contacts. We flag tolerances, materials, and volumes so your message speaks the buyer's language."
     },
     {
       icon: Heart,
       title: "Medical device contract manufacturing companies",
-      description: "Medical device contract manufacturing companies need buyers that match ISO 13485 and market rules. We add certification and regulatory notes so your outreach clears compliance fast.",
-      keywords: "b2b business leads"
+      description: "Medical device contract manufacturing companies need buyers that match ISO 13485 and market rules. We add certification and regulatory notes so your outreach clears compliance fast."
     },
     {
       icon: Building,
       title: "Manufacturer companies",
-      description: "Manufacturer companies that export consistently start with a clean, verified target list. Your team gets fewer, better leads and more booked meetings.",
-      keywords: "prospecting companies"
+      description: "Manufacturer companies that export consistently start with a clean, verified target list. Your team gets fewer, better leads and more booked meetings."
     },
     {
       icon: Cpu,
       title: "Electronic & electronics manufacturing companies",
-      description: "Electronic manufacturing companies and electronics manufacturing companies reach high‑fit OEMs and distributors through focused lists. We separate prototype, NPI, and mass‑production needs to increase close rates.",
-      keywords: "b2b company search"
+      description: "Electronic manufacturing companies and electronics manufacturing companies reach high‑fit OEMs and distributors through focused lists. We separate prototype, NPI, and mass‑production needs to increase close rates."
     },
     {
       icon: Pill,
       title: "Pharmaceutical manufacturing companies",
-      description: "Pharmaceutical manufacturing companies connect with vetted distributors and institutional buyers that pass quality checks. We include dossier availability and compliance notes to remove friction early.",
-      keywords: "b2b business leads"
+      description: "Pharmaceutical manufacturing companies connect with vetted distributors and institutional buyers that pass quality checks. We include dossier availability and compliance notes to remove friction early."
     }
   ]
 
@@ -82,8 +72,8 @@ export function ManufacturingAdvantagesSection() {
             </span>
           </h1>
           <p className="text-xl lg:text-2xl text-gray-600 leading-relaxed max-w-4xl mx-auto mb-12">
-            See how different types of manufacturing companies use ITAI to find verified international buyers, 
-            generate quality b2b business leads, and book more qualified meetings through targeted b2b company search.
+            See how different types of manufacturing companies use ITAI to find verified international buyers 
+            and book more qualified meetings.
           </p>
 
           {/* Top CTAs */}
@@ -141,11 +131,6 @@ export function ManufacturingAdvantagesSection() {
                 <p className="text-lg text-gray-600 leading-relaxed mb-8">
                   {type.description}
                 </p>
-                <div className="flex items-center mb-8">
-                  <span className="text-sm font-medium text-orange-600 bg-orange-50 px-3 py-1 rounded-full">
-                    Focus: {type.keywords}
-                  </span>
-                </div>
                 <a 
                   href="https://calendly.com/mehmet-odsdanismanlik/30min"
                   target="_blank"
@@ -191,8 +176,8 @@ export function ManufacturingAdvantagesSection() {
                 Ready to see verified buyers for your industry?
               </h3>
               <p className="text-lg text-gray-600 mb-8">
-                Get access to high-quality b2b business leads and see how our b2b company search 
-                can help prospecting companies like yours book more qualified meetings.
+                Get access to high-quality verified buyers and see how our platform 
+                can help manufacturing companies like yours book more qualified meetings.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a 

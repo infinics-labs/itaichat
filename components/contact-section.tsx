@@ -19,6 +19,8 @@ export function ContactSection() {
     notes: ''
   })
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -28,30 +30,53 @@ export function ContactSection() {
     }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsSubmitting(true)
+    setSubmitError('')
     
-    // Track form submission
-    trackFormSubmission('demo_booking', 'contact')
-    
-    // Track CTA click
-    trackCTAClick({
-      page: 'contact',
-      placement: 'form_submit',
-      button_text: 'Book a live demo',
-      destination: 'thank_you'
-    })
-    
-    // Show success state (in real app, this would send data to backend)
-    setIsSubmitted(true)
-    
-    // Don't auto-reset the form - let user manually close
+    try {
+      // Submit to API
+      const response = await fetch('/api/contact/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to submit form')
+      }
+
+      // Track form submission
+      trackFormSubmission('demo_booking', 'contact')
+      
+      // Track CTA click
+      trackCTAClick({
+        page: 'contact',
+        placement: 'form_submit',
+        button_text: 'Book a live demo',
+        destination: 'thank_you'
+      })
+      
+      // Show success state
+      setIsSubmitted(true)
+      
+    } catch (error) {
+      console.error('Form submission error:', error)
+      setSubmitError(error instanceof Error ? error.message : 'Failed to submit form. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const inlineFaq = [
     {
       question: "What happens next?",
-      answer: "We&apos;ll review your information and send you a calendar link within 2 hours to schedule your personalized demo."
+      answer: "We&apos;ll review your information and send you a calendar link to schedule your personalized demo."
     },
     {
       question: "How long until I receive a preview?",
@@ -178,13 +203,20 @@ export function ContactSection() {
                     />
                   </div>
 
+                  {submitError && (
+                    <div className="p-4 bg-red-50 border border-red-200 rounded-md">
+                      <p className="text-red-600 text-sm">{submitError}</p>
+                    </div>
+                  )}
+
                   <Button
                     type="submit"
                     size="lg"
-                    className="w-full bg-gradient-to-r from-orange-500 to-purple-600 hover:from-orange-600 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300"
+                    disabled={isSubmitting}
+                    className="w-full bg-gradient-to-r from-orange-500 to-purple-600 hover:from-orange-600 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Calendar className="w-5 h-5 mr-2" />
-                    Book a live demo
+                    {isSubmitting ? 'Submitting...' : 'Book a live demo'}
                   </Button>
                 </form>
               </CardContent>
@@ -266,7 +298,7 @@ export function ContactSection() {
                   </h3>
                   
                   <p className="text-gray-600 mb-6">
-                    We&apos;ll send you a calendar link within 2 hours to schedule your personalized demo.
+                    We&apos;ll send you a calendar link to schedule your personalized demo.
                   </p>
                   
                   <div className="space-y-3">

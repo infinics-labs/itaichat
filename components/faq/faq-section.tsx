@@ -10,24 +10,29 @@ export function FAQSection() {
 
   const faqData = [
     {
-      id: "b2b-prospecting-why-matters",
-      question: "What is b2b prospecting and why does it matter here?",
-      answer: "B2B prospecting is the work of finding and qualifying companies and contacts that match your ICP so outreach becomes efficient—book a live demo to see it in action."
+      id: "what-is-b2b-prospecting",
+      question: "What is b2b prospecting?",
+      answer: "B2B prospecting is the work of finding and qualifying companies and contacts that match your ICP so outreach becomes efficient-book a live demo to see it in action."
     },
     {
-      id: "data-sources-verification", 
-      question: "Where does your data come from and how do you verify contacts?",
-      answer: "We enrich from trusted sources, validate email deliverability, check role relevance, and replace unreachable contacts quickly."
+      id: "lead-scraper-difference", 
+      question: "How is a lead scraper different from your approach?",
+      answer: "A lead scraper pulls unverified data at scale while we deliver verified leads with role fit and deliverability checks-book a live demo for a preview."
     },
     {
-      id: "search-by-country-sector",
-      question: "Do you support b2b company search by country or sector?",
-      answer: "Yes, we filter by sector, size, location, and buying signals to deliver a shortlist that feels tailor‑made."
+      id: "b2b-prospecting-tool",
+      question: "Do you offer a b2b prospecting tool or software?",
+      answer: "We deliver clean segments that plug into your workflow and integrate with popular tools-book a live demo to see sample segments."
     },
     {
-      id: "examples-before-decide",
-      question: "Can I see examples before I decide?",
-      answer: "Yes-see sample buyers in a live demo; we walk through a curated preview."
+      id: "free-b2b-leads-database",
+      question: "Can I get a b2b leads database free?",
+      answer: "Free sources risk low accuracy and compliance issues; we show a small verified preview in the live demo."
+    },
+    {
+      id: "regulated-categories",
+      question: "Do you support prospection b2b in regulated categories?",
+      answer: "Yes, with compliance notes; see examples in a live demo."
     }
   ]
 
@@ -38,20 +43,6 @@ export function FAQSection() {
   return (
     <section className="py-20 bg-white">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Navigation Links */}
-        <div className="mb-12">
-          <nav className="flex flex-wrap justify-center gap-4 p-4 bg-gray-50 rounded-lg">
-            {faqData.map((item, index) => (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                className="text-sm font-medium text-gray-600 hover:text-orange-500 transition-colors px-3 py-2 rounded-md hover:bg-white"
-              >
-                Q{index + 1}
-              </a>
-            ))}
-          </nav>
-        </div>
 
         {/* FAQ Content */}
         <div className="space-y-4 mb-12">

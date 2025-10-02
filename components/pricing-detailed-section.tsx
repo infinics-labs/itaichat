@@ -118,20 +118,6 @@ export function PricingDetailedSection() {
             </div>
           </div>
 
-          {/* Guarantee Section */}
-          <div className="mb-20">
-            <Card className="border-0 shadow-xl bg-gradient-to-r from-green-50 to-blue-50">
-              <CardContent className="p-12 text-center">
-                <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                  Guarantee
-                </h2>
-                <p className="text-xl text-gray-700 leading-relaxed max-w-3xl mx-auto">
-                  We replace any unreachable contact reported within 14 days. Your b2b database 
-                  stays fresh and actionable with our quality guarantee.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
 
           {/* FAQ Section */}
           <div className="mb-20">

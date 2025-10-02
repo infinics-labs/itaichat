@@ -30,3 +30,21 @@ export interface ConversationRecord {
   language?: string
   conversation_data?: any
 }
+
+export interface ContactSubmission {
+  id?: string
+  created_at?: string
+  name: string
+  email: string
+  company: string
+  product_category: string
+  target_countries: string
+  notes?: string
+  ip_address?: string
+  user_agent?: string
+  referrer?: string
+  status?: 'new' | 'waiting' | 'contacted' | 'demo_scheduled' | 'declined' | 'ignored'
+  demo_scheduled_at?: string
+  follow_up_notes?: string
+  admin_notes?: string
+}

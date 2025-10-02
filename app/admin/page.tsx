@@ -16,7 +16,8 @@ import {
   SettingsIcon,
   TrendingUpIcon,
   CalendarIcon,
-  Globe
+  Globe,
+  MailIcon
 } from 'lucide-react';
 
 const fadeInUp = {
@@ -225,7 +226,7 @@ export default function AdminPage() {
         </div>
 
         {/* Main Navigation Cards */}
-        <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {/* Chat Conversations Card */}
           <motion.div
             initial="hidden"
@@ -352,12 +353,54 @@ export default function AdminPage() {
             </Link>
           </motion.div>
 
-          {/* Settings Card */}
+          {/* Contact Submissions Card */}
           <motion.div
             initial="hidden"
             animate="visible"
             variants={fadeInUp}
             transition={{ delay: 0.8 }}
+          >
+            <Link href="/admin/contact-submissions">
+              <Card className="cursor-pointer transition-all duration-300 hover:shadow-xl hover:border-orange-300 hover:-translate-y-1 group">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-gradient-to-br from-orange-500/10 to-orange-500/20 text-orange-600">
+                        <MailIcon className="size-6" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-xl">Contact Submissions</CardTitle>
+                        <CardDescription>Manage demo requests and leads</CardDescription>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">New</Badge>
+                      <ArrowRightIcon className="size-5 transition-transform group-hover:translate-x-1" />
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="text-muted-foreground">New Leads</p>
+                      <p className="font-semibold text-orange-600">-</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Total</p>
+                      <p className="font-semibold text-green-600">-</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          </motion.div>
+
+          {/* Settings Card */}
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={fadeInUp}
+            transition={{ delay: 0.9 }}
           >
             <Link href="/admin/settings">
               <Card className="cursor-pointer transition-all duration-300 hover:shadow-xl hover:border-gray-300 hover:-translate-y-1 group">
