@@ -57,31 +57,32 @@ Customers: ${customers || 'N/A'}`;
     const countries = finalCountries.split(',').map((c: string) => c.trim());
     const primaryCountry = countries[0];
 
-    // Create the refined prompt based on the provided template
-    const prompt = `Refined Prompt 1: Generate Company Search Keywords
+    // Create the revised prompt based on the new template
+    const prompt = `Revised AI Character Prompt: B2B Search Query Generator
 
-Use this when you need keywords to find specific companies in a target industry and country.
+Role: AI that interprets the business from form data to generate targeted Google search queries using advanced parameters.
 
-Objective: Produce a list of search keywords for locating ${finalProduct} companies in ${primaryCountry} via Google advanced search.
+Core Instruction: Use all provided form data to comprehend the business model before identifying targets.
 
-Requirements:
-- Keywords must target actual company websites, not directories, lists, newsletters, or informational sites.
-- Exclude queries that return .org, .gov domains, or contact information pages.
-- Focus on B2B contexts; ensure queries are compliant with advanced search parameters (e.g., site operators, exclusions).
+Process:
 
-Additional Context:
+1. Business Interpretation:
+   - Analyze "Existing Keywords" to deduce the company's role (e.g., manufacturer, supplier) and market focus.
+   - Cross-reference with "Sales Channels" to understand distribution logic.
+   - Review "Competitors" and "Customers" data (e.g., websites, names) if provided to identify market patterns, similar entities, or gaps.
+
+2. Target Deduction: Based on business interpretation, identify probable B2B partners (e.g., distributors, importers).
+
+3. Query Generation: Formulate 3 search queries using advanced Google operators (e.g., site:, intitle:, country-specific domains) tailored to the target country and business context.
+
+Form Data Provided:
 - Company: ${finalCompany}
 - Product Category: ${finalProduct}
+- Target Country: ${primaryCountry}
 - Target Countries: ${finalCountries}
-${finalNotes ? `- Additional Notes: ${finalNotes}` : ''}
+${finalNotes ? `- Additional Context: ${finalNotes}` : ''}
 
-Output: Provide 5-10 concise keywords or phrases, formatted as a bulleted list.
-
-Then, also provide:
-
-Refined Prompt 2: Create Category-Specific Search Queries
-
-Objective: Generate up to three search queries per customer category to identify exact companies on Google.
+Output: Generate up to three search queries per customer category to identify exact companies on Google.
 
 Requirements:
 - Each query must directly lead to company websites, avoiding any non-commercial results.
@@ -89,7 +90,7 @@ Requirements:
 - Keep queries brief and specific; no verbosity.
 - Exclude org/gov sites and contact info pages.
 
-Output: A structured list with categories as headings, each containing 1-3 queries.`;
+Please analyze the business context from the provided data and generate targeted search queries accordingly.`;
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o",
