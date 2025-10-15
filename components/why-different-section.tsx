@@ -110,7 +110,7 @@ export function WhyDifferentSection() {
 
                   <div className="bg-gradient-to-r from-orange-100 to-blue-100 rounded-lg p-6 shadow-md border-2 border-orange-200">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-medium text-gray-800">B2B Prospecting Tool</span>
+                      <span className="text-sm font-medium text-gray-800">ITAI</span>
                       <span className="text-sm font-semibold text-orange-600">Quality Focus</span>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -122,7 +122,7 @@ export function WhyDifferentSection() {
 
                 <div className="mt-8 text-center">
                   <p className="text-sm text-gray-600 italic">
-                    If you compare a prospecting platform to a B2B prospecting tool, 
+                    If you compare a prospecting platform to a ITAI tool, 
                     the difference here is quality over volume.
                   </p>
                 </div>

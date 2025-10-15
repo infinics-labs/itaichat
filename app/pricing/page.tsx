@@ -1,11 +1,11 @@
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import { PricingDetailedSection } from "@/components/pricing-detailed-section"
+import { PricingPageSection } from "@/components/pricing/pricing-page-section"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Pricing | Request Pricing in a Live Demo",
-  description: "Simple plans for exporters who need verified buyers and clean B2B data; request pricing in a live demo and see a curated preview.",
+  title: "Pricing | Choose Your Perfect Export Plan",
+  description: "Simple, transparent pricing for verified international buyers and clean B2B data. Starting Package, Plus Package, and Pro Plus Package options available.",
 }
 
 export default function PricingPage() {
@@ -13,7 +13,7 @@ export default function PricingPage() {
     <div className="min-h-screen bg-white">
       <Header />
       <main>
-        <PricingDetailedSection />
+        <PricingPageSection />
       </main>
       <Footer />
     </div>
