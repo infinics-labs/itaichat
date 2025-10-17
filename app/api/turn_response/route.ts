@@ -70,406 +70,868 @@ Examples:
   }
 }
 
-// Phase description helper
-function getPhaseDescription(phase: string): string {
-  const descriptions: { [key: string]: string } = {
-    "INITIAL": "Starting conversation",
-    "PRODUCT_QUESTION": "Asking for product information",
-    "COUNTRY_QUESTION": "Asking for target country",
-    "GTIP_QUESTION": "Asking for GTIP code",
-    "SALES_CHANNELS_QUESTION": "Asking for sales channels",
-    "WEBSITE_QUESTION": "Asking for company website",
-    "NAME_QUESTION": "Asking for contact name",
-    "EMAIL_QUESTION": "Asking for email address",
-    "PHONE_QUESTION": "Asking for phone number",
-    "KEYWORDS_QUESTION": "Confirming product keywords",
-    "COMPETITORS_QUESTION": "Presenting 2 competitors and asking for note confirmation",
-    "CUSTOMERS_QUESTION": "Presenting 2 customers and asking for note confirmation",
-    "DEMO_QUESTION": "Offering demo/calendly and providing final summary",
-    "UNKNOWN_PHASE": "Phase could not be determined"
-  };
-  return descriptions[phase] || "Unknown phase";
-}
-
-// Next expected action helper
-function getNextExpectedAction(state: any): string {
-  const phase = state.currentPhase;
-  
-  switch (phase) {
-    case "INITIAL":
-      return "Bot should greet user and ask for product information";
-    case "PRODUCT_QUESTION":
-      return "Waiting for user to provide product name";
-    case "COUNTRY_QUESTION":
-      return "Waiting for user to provide target country";
-    case "GTIP_QUESTION":
-      return "Waiting for user to confirm GTIP code";
-    case "SALES_CHANNELS_QUESTION":
-      return "Waiting for user to provide sales channels";
-    case "WEBSITE_QUESTION":
-      return "Waiting for user to provide company website";
-    case "NAME_QUESTION":
-      return "Waiting for user to provide their name";
-    case "EMAIL_QUESTION":
-      return "Waiting for user to provide corporate email";
-    case "PHONE_QUESTION":
-      return "Waiting for user to provide phone number";
-    case "KEYWORDS_QUESTION":
-      return "Waiting for user to confirm keywords, then move to competitors";
-    case "COMPETITORS_QUESTION":
-      return "Waiting for user yes/no response, then move to customers";
-    case "CUSTOMERS_QUESTION":
-      return "Waiting for user yes/no response, then move to demo";
-    case "DEMO_QUESTION":
-      return "Conversation should be completing with final summary";
-    default:
-      return "Unknown next action - check phase detection logic";
-  }
-}
-
-// Flow validation helper
-function validateConversationFlow(state: any): string[] {
-  const issues: string[] = [];
-  
-  // Check for missing prerequisites
-  if (state.currentPhase === "COUNTRY_QUESTION" && !state.product) {
-    issues.push("Country question asked but no product collected");
-  }
-  
-  if (state.currentPhase === "COMPETITORS_QUESTION" && !state.keywordsConfirmed) {
-    issues.push("Competitors phase started but keywords not confirmed");
-  }
-  
-  if (state.currentPhase === "CUSTOMERS_QUESTION" && !state.competitorsCompleted) {
-    issues.push("Customers phase started but competitors not completed");
-  }
-  
-  if (state.currentPhase === "DEMO_QUESTION" && !state.customersCompleted) {
-    issues.push("Demo phase started but customers not completed");
-  }
-  
-  // Check for stuck states
-  if (state.competitorsSectionStarted && !state.competitorsCompleted && state.competitorCount === 0) {
-    issues.push("Competitors section started but no competitors counted");
-  }
-  
-  if (state.customersSectionStarted && !state.customersCompleted && state.customerCount === 0) {
-    issues.push("Customers section started but no customers counted");
-  }
-  
-  // Check for required fields
-  if (state.currentPhase === "DEMO_QUESTION") {
-    if (!state.phone) issues.push("Demo phase reached but no phone number collected");
-    if (!state.email) issues.push("Demo phase reached but no email collected");
-    if (!state.name) issues.push("Demo phase reached but no name collected");
-  }
-  
-  return issues;
-}
-
-// Phase detection system
-function detectCurrentPhase(messages: any[], state: any): string {
-  const assistantMessages = messages.filter(msg => msg.role === "assistant");
-  const userMessages = messages.filter(msg => msg.role === "user");
-  
-  if (assistantMessages.length === 0) return "INITIAL";
-  
-  const lastAssistantMessage = assistantMessages[assistantMessages.length - 1];
-  const lastAssistantContent = (typeof lastAssistantMessage.content === 'string' ? 
-    lastAssistantMessage.content : 
-    Array.isArray(lastAssistantMessage.content) ? 
-      lastAssistantMessage.content.map((c: any) => c.text || '').join(' ') : ''
-  ).toLowerCase();
-  
-  const lastUserMessage = userMessages[userMessages.length - 1];
-  const lastUserContent = lastUserMessage ? lastUserMessage.content.toLowerCase() : '';
-  
-  // Phase 1: Product
-  if (!state.product && (lastAssistantContent.includes("which product") || lastAssistantContent.includes("hangi ürün"))) {
-    return "PRODUCT_QUESTION";
-  }
-  
-  // Phase 2: Country  
-  if (state.product && !state.country && (lastAssistantContent.includes("which country") || lastAssistantContent.includes("hangi ülke"))) {
-    return "COUNTRY_QUESTION";
-  }
-  
-  // Phase 3: GTIP Code
-  if (state.country && !state.gtipCode && (lastAssistantContent.includes("gtip code") || lastAssistantContent.includes("gtip kod"))) {
-    return "GTIP_QUESTION";
-  }
-  
-  // Phase 4: Sales Channels
-  if (state.gtipCode && !state.salesChannels && (lastAssistantContent.includes("sales channel") || lastAssistantContent.includes("satış kanal"))) {
-    return "SALES_CHANNELS_QUESTION";
-  }
-  
-  // Phase 5: Website
-  if (state.salesChannels && !state.website && (lastAssistantContent.includes("website") || lastAssistantContent.includes("websiten"))) {
-    return "WEBSITE_QUESTION";
-  }
-  
-  // Phase 6: Name
-  if (state.website !== undefined && !state.name && (lastAssistantContent.includes("your name") || lastAssistantContent.includes("isminiz"))) {
-    return "NAME_QUESTION";
-  }
-  
-  // Phase 7: Email
-  if (state.name && !state.email && (lastAssistantContent.includes("email") || lastAssistantContent.includes("e-posta"))) {
-    return "EMAIL_QUESTION";
-  }
-  
-  // Phase 8: Phone
-  if (state.email && !state.phone && (lastAssistantContent.includes("phone") || lastAssistantContent.includes("telefon"))) {
-    return "PHONE_QUESTION";
-  }
-  
-  // Phase 9: Keywords
-  if (state.phone && !state.keywordsConfirmed && (lastAssistantContent.includes("keywords describe") || lastAssistantContent.includes("anahtar kelime"))) {
-    return "KEYWORDS_QUESTION";
-  }
-  
-  // Phase 10: Competitors - Present 2 competitors and ask for note
-  if (state.keywordsConfirmed && !state.competitorsCompleted && 
-      (lastAssistantContent.includes("competitor") && 
-       (lastAssistantContent.includes("should i keep a note of these competitors") || 
-        lastAssistantContent.includes("bu rakipleri sizin için not alayım mı")))) {
-    return "COMPETITORS_QUESTION";
-  }
-  
-  // Phase 11: Customers - Present 2 customers and ask for note
-  if (state.competitorsCompleted && !state.customersCompleted &&
-      (lastAssistantContent.includes("customer") || lastAssistantContent.includes("müşteri")) &&
-      (lastAssistantContent.includes("should i keep a note of these customers") || 
-       lastAssistantContent.includes("bu müşterileri sizin için not alayım mı"))) {
-    return "CUSTOMERS_QUESTION";
-  }
-  
-  // Phase 12: Demo
-  if ((state.customersCompleted || (state.customersSectionStarted && lastUserContent.includes("no"))) &&
-      (lastAssistantContent.includes("calendly") || lastAssistantContent.includes("toplantı"))) {
-    return "DEMO_QUESTION";
-  }
-  
-  return "UNKNOWN_PHASE";
-}
-
-// Helper function to extract conversation state from messages
-async function extractConversationState(messages: any[]) {
-  const state: any = {
-    product: undefined,
-    country: undefined,
-    gtipCode: undefined,
-    salesChannels: undefined,
-    website: undefined,
-    name: undefined,
-    email: undefined,
-    phone: undefined,
-    keywords: undefined,
-    competitors: [],
-    customers: [],
-    detectedLanguage: 'turkish', // Default to Turkish
-    userStartedWithProduct: false,
-    aiAnalysis: undefined,
-    currentPhase: "INITIAL"
-  };
-
-  // Get user messages
+// Smart conversation analyzer based on user message patterns
+function detectCountryFromConversation(messages: any[]): string | null {
   const userMessages = messages.filter(msg => msg.role === "user" && msg.content);
   
-  // Analyze the first user message with AI
+  console.log('🔍 ANALYZING USER MESSAGES FOR COUNTRY...');
+  console.log(`👤 User messages: ${userMessages.map(msg => `"${msg.content}"`).join(', ')}`);
+  
+  // If we have 2+ user messages, the second one is likely the country response
+  // Pattern: User says product → Assistant asks country → User says country
+  if (userMessages.length >= 2) {
+    const secondMessage = userMessages[1].content.trim();
+    console.log(`🔍 ANALYZING SECOND USER MESSAGE AS POTENTIAL COUNTRY: "${secondMessage}"`);
+    
+    // Check if it's a reasonable country response (not too long, not a common rejection)
+    if (secondMessage.length > 1 && secondMessage.length < 50 && 
+        !secondMessage.toLowerCase().includes("don't know") &&
+        !secondMessage.toLowerCase().includes("not sure") &&
+        !secondMessage.toLowerCase().includes("no") &&
+        !secondMessage.toLowerCase().includes("yes")) {
+      console.log(`✅ DETECTED COUNTRY FROM USER MESSAGE PATTERN: "${secondMessage}"`);
+      return secondMessage.toLowerCase();
+    }
+  }
+  
+  console.log(`❌ NO COUNTRY DETECTED FROM USER MESSAGE PATTERN`);
+  return null;
+}
+
+function detectGtipFromConversation(messages: any[]): string | null {
+  const userMessages = messages.filter(msg => msg.role === "user" && msg.content);
+  
+  console.log('🔍 ANALYZING USER MESSAGES FOR GTIP RESPONSE...');
+  console.log(`👤 User messages: ${userMessages.map(msg => `"${msg.content}"`).join(', ')}`);
+  
+  // Look for GTIP-related responses in user messages
+  // Pattern: User says product → country → GTIP response (no/yes)
+  if (userMessages.length >= 3) {
+    const thirdMessage = userMessages[2].content.toLowerCase().trim();
+    console.log(`🔍 ANALYZING THIRD USER MESSAGE AS POTENTIAL GTIP RESPONSE: "${thirdMessage}"`);
+    
+    // Check for GTIP knowledge response
+    if (thirdMessage.includes("no") || thirdMessage.includes("don't know") || thirdMessage.includes("hayır")) {
+      console.log(`✅ DETECTED GTIP UNKNOWN FROM USER MESSAGE PATTERN`);
+      return "unknown";
+    } else if (thirdMessage.includes("yes") || thirdMessage.includes("know") || thirdMessage.includes("evet")) {
+      console.log(`✅ DETECTED GTIP KNOWN FROM USER MESSAGE PATTERN`);
+      return "known";
+    }
+  }
+  
+  // Look for GTIP acceptance in later messages
+  if (userMessages.length >= 4) {
+    const fourthMessage = userMessages[3].content.toLowerCase().trim();
+    console.log(`🔍 ANALYZING FOURTH USER MESSAGE AS POTENTIAL GTIP ACCEPTANCE: "${fourthMessage}"`);
+    
+    if (fourthMessage.includes("yes") || fourthMessage.includes("use") || fourthMessage.includes("ok") || fourthMessage.includes("evet")) {
+      console.log(`✅ DETECTED GTIP ACCEPTED FROM USER MESSAGE PATTERN`);
+      return "accepted";
+    } else if (fourthMessage.includes("no") || fourthMessage.includes("hayır")) {
+      console.log(`❌ DETECTED GTIP REJECTED FROM USER MESSAGE PATTERN`);
+      return "rejected";
+    }
+  }
+  
+  console.log(`❌ NO GTIP RESPONSE DETECTED FROM USER MESSAGE PATTERN`);
+  return null;
+}
+
+function detectInfoFromConversation(messages: any[], questionType: string, patterns: any[] | null): string | null {
+  const userMessages = messages.filter(msg => msg.role === "user" && msg.content);
+  const allUserText = userMessages.map(msg => msg.content).join(" ").toLowerCase();
+  
+  console.log(`🔍 ANALYZING USER MESSAGES FOR ${questionType.toUpperCase()}...`);
+  console.log(`👤 All user text: "${allUserText}"`);
+  
+  // If no patterns specified, look for any reasonable response after the expected position
+  if (!patterns) {
+    // For different info types, check different message positions
+    const expectedPosition = getExpectedMessagePosition(questionType);
+    if (userMessages.length > expectedPosition) {
+      const responseMsg = userMessages[expectedPosition].content.trim();
+      if (responseMsg.length > 0) {
+        console.log(`✅ ${questionType.toUpperCase()} PROVIDED FROM USER MESSAGE PATTERN: "${responseMsg}"`);
+        return "provided";
+      }
+    }
+  } else {
+    // Check if any user message matches the patterns
+    for (const pattern of patterns) {
+      if (typeof pattern === 'string') {
+        if (allUserText.includes(pattern)) {
+          console.log(`✅ ${questionType.toUpperCase()} PROVIDED FROM USER MESSAGE PATTERN (matched: ${pattern})`);
+          return "provided";
+        }
+      } else if (pattern instanceof RegExp) {
+        if (pattern.test(allUserText)) {
+          console.log(`✅ ${questionType.toUpperCase()} PROVIDED FROM USER MESSAGE PATTERN (matched regex)`);
+          return "provided";
+        }
+      }
+    }
+  }
+  
+  console.log(`❌ NO ${questionType.toUpperCase()} DETECTED FROM USER MESSAGE PATTERN`);
+  return null;
+}
+
+function getExpectedMessagePosition(questionType: string): number {
+  // Expected user message positions based on conversation flow
+  const positions: { [key: string]: number } = {
+    "sales channel": 4, // After product, country, gtip knowledge, gtip acceptance
+    "website": 5,
+    "name": 6,
+    "email": 7,
+    "phone": 8
+  };
+  return positions[questionType] || 5; // Default position
+}
+
+function detectKeywordsFromConversation(messages: any[]): string | null {
+  const userMessages = messages.filter(msg => msg.role === "user" && msg.content);
+  
+  console.log('🔍 ANALYZING USER MESSAGES FOR KEYWORDS RESPONSE...');
+  console.log(`👤 User messages: ${userMessages.map(msg => `"${msg.content}"`).join(', ')}`);
+  
+  // Look for keywords acceptance patterns in user messages
+  // Keywords typically come after: product, country, gtip, sales channels, website, name, email, phone
+  // So keywords response should be around message 9+
+  
+  for (let i = 8; i < userMessages.length; i++) { // Start from message 9 (index 8)
+    const userMessage = userMessages[i].content.toLowerCase().trim();
+    console.log(`🔍 ANALYZING USER MESSAGE ${i + 1} FOR KEYWORDS RESPONSE: "${userMessage}"`);
+    
+    // Check for positive keywords acceptance
+    const positiveResponses = [
+      "yes", "evet", "ok", "okay", "good", "iyi", "great", "perfect", 
+      "describes", "tanımlar", "correct", "doğru", "right", "suitable", 
+      "uygun", "fine", "tamam", "its describes", "they describe", 
+      "yes its describes", "these are good", "bunlar iyi"
+    ];
+    
+    const negativeResponses = [
+      "no", "hayır", "not good", "iyi değil", "wrong", "yanlış", 
+      "doesn't describe", "tanımlamıyor", "not suitable", "uygun değil",
+      "change", "değiştir", "different", "farklı"
+    ];
+    
+    // Check for positive acceptance
+    for (const positive of positiveResponses) {
+      if (userMessage.includes(positive)) {
+        console.log(`✅ DETECTED KEYWORDS ACCEPTED FROM USER MESSAGE PATTERN (matched: "${positive}")`);
+        return "accepted";
+      }
+    }
+    
+    // Check for negative rejection (which should still lead to new keywords and eventual acceptance)
+    for (const negative of negativeResponses) {
+      if (userMessage.includes(negative)) {
+        console.log(`❌ DETECTED KEYWORDS REJECTED FROM USER MESSAGE PATTERN (matched: "${negative}")`);
+        // Continue looking for acceptance in later messages after new keywords are suggested
+        continue;
+      }
+    }
+  }
+  
+  console.log(`❌ NO KEYWORDS RESPONSE DETECTED FROM USER MESSAGE PATTERN`);
+  return null;
+}
+
+function detectCompetitorsFromConversation(messages: any[]): string | null {
+  const userMessages = messages.filter(msg => msg.role === "user" && msg.content);
+  
+  console.log('🔍 ANALYZING USER MESSAGES FOR COMPETITORS RESPONSE...');
+  console.log(`👤 User messages: ${userMessages.map(msg => `"${msg.content}"`).join(', ')}`);
+  
+  // Look for competitors response patterns in user messages
+  // Competitors come after keywords, so should be around message 10+
+  
+  for (let i = 9; i < userMessages.length; i++) { // Start from message 10 (index 9)
+    const userMessage = userMessages[i].content.toLowerCase().trim();
+    console.log(`🔍 ANALYZING USER MESSAGE ${i + 1} FOR COMPETITORS RESPONSE: "${userMessage}"`);
+    
+    // Check for competitors response (yes/no to "keep a note")
+    const acceptResponses = ["yes", "evet", "ok", "okay", "keep", "note", "save", "kaydet", "use", "can", "good", "sure"];
+    const rejectResponses = ["no", "hayır", "don't", "not", "skip", "don't want"];
+    
+    // Check for acceptance
+    for (const accept of acceptResponses) {
+      if (userMessage.includes(accept)) {
+        console.log(`✅ DETECTED COMPETITORS ACCEPTED FROM USER MESSAGE PATTERN (matched: "${accept}")`);
+        return "accepted";
+      }
+    }
+    
+    // Check for rejection
+    for (const reject of rejectResponses) {
+      if (userMessage.includes(reject)) {
+        console.log(`❌ DETECTED COMPETITORS REJECTED FROM USER MESSAGE PATTERN (matched: "${reject}")`);
+        return "rejected";
+      }
+    }
+  }
+  
+  console.log(`❌ NO COMPETITORS RESPONSE DETECTED FROM USER MESSAGE PATTERN`);
+  return null;
+}
+
+function detectCustomersFromConversation(messages: any[]): string | null {
+  const userMessages = messages.filter(msg => msg.role === "user" && msg.content);
+  
+  console.log('🔍 ANALYZING USER MESSAGES FOR CUSTOMERS RESPONSE...');
+  console.log(`👤 User messages: ${userMessages.map(msg => `"${msg.content}"`).join(', ')}`);
+  
+  // Look for customers response patterns in user messages
+  // Customers come after competitors, so should be around message 11+
+  
+  for (let i = 10; i < userMessages.length; i++) { // Start from message 11 (index 10)
+    const userMessage = userMessages[i].content.toLowerCase().trim();
+    console.log(`🔍 ANALYZING USER MESSAGE ${i + 1} FOR CUSTOMERS RESPONSE: "${userMessage}"`);
+    
+    // Check for customers response (yes/no to "keep a note")
+    const acceptResponses = ["yes", "evet", "ok", "okay", "keep", "note", "save", "kaydet", "use", "can", "good", "sure"];
+    const rejectResponses = ["no", "hayır", "don't", "not", "skip", "don't want"];
+    
+    // Check for acceptance
+    for (const accept of acceptResponses) {
+      if (userMessage.includes(accept)) {
+        console.log(`✅ DETECTED CUSTOMERS ACCEPTED FROM USER MESSAGE PATTERN (matched: "${accept}")`);
+        return "accepted";
+      }
+    }
+    
+    // Check for rejection
+    for (const reject of rejectResponses) {
+      if (userMessage.includes(reject)) {
+        console.log(`❌ DETECTED CUSTOMERS REJECTED FROM USER MESSAGE PATTERN (matched: "${reject}")`);
+        return "rejected";
+      }
+    }
+  }
+  
+  console.log(`❌ NO CUSTOMERS RESPONSE DETECTED FROM USER MESSAGE PATTERN`);
+  return null;
+}
+
+// Advanced conversation context analyzer - analyzes full conversation including bot messages
+function analyzeFullConversation(messages: any[]): any {
+  console.log('🔍 ADVANCED CONVERSATION ANALYSIS - Analyzing full conversation context...');
+  console.log(`📊 Total messages: ${messages.length}`);
+  
+  // Debug: Show all messages and their roles
+  console.log('📋 ALL MESSAGES RECEIVED:');
+  messages.forEach((msg, index) => {
+    console.log(`  [${index}] Role: ${msg?.role || 'undefined'}, Type: ${msg?.type || 'undefined'}`);
+    if (msg?.content) {
+      const content = typeof msg.content === 'string' ? msg.content : 
+                     Array.isArray(msg.content) ? msg.content.map((c: any) => c.text || c).join(' ') : 'complex';
+      console.log(`       Content: "${content.substring(0, 80)}..."`);
+    }
+  });
+  
+  const analysis: any = {
+    gtip: null,
+    salesChannels: null,
+    website: null,
+    name: null,
+    email: null,
+    phone: null,
+    keywords: null
+  };
+  
+  // Helper function to extract text content from message
+  function extractMessageContent(msg: any): string {
+    if (!msg) return '';
+    
+    // Handle different message formats
+    if (typeof msg.content === 'string') {
+      return msg.content;
+    }
+    
+    if (Array.isArray(msg.content)) {
+      return msg.content.map((c: any) => {
+        if (typeof c === 'string') return c;
+        if (c.text) return c.text;
+        if (c.type === 'output_text' && c.text) return c.text;
+        return '';
+      }).join(' ').trim();
+    }
+    
+    return '';
+  }
+  
+  // Create conversation pairs: [assistant question] → [user response]
+  const conversationPairs = [];
+  
+  for (let i = 0; i < messages.length - 1; i++) {
+    const currentMsg = messages[i];
+    const nextMsg = messages[i + 1];
+    
+    // More flexible message filtering - check for role instead of type
+    if (!currentMsg || !currentMsg.role || !nextMsg || !nextMsg.role) {
+      continue;
+    }
+    
+    // Look for assistant → user pairs
+    if (currentMsg.role === "assistant" && nextMsg.role === "user") {
+      const question = extractMessageContent(currentMsg);
+      const response = extractMessageContent(nextMsg);
+      
+      console.log(`🔍 POTENTIAL PAIR FOUND: Assistant[${i}] → User[${i+1}]`);
+      console.log(`   Question: "${question.substring(0, 100)}..."`);
+      console.log(`   Response: "${response.substring(0, 50)}..."`);
+      
+      if (question && response) {
+        conversationPairs.push({
+          question: question,
+          response: response,
+          questionIndex: i,
+          responseIndex: i + 1
+        });
+        console.log(`✅ PAIR ADDED: Total pairs now: ${conversationPairs.length}`);
+      } else {
+        console.log(`❌ PAIR SKIPPED: Empty question or response`);
+      }
+    }
+  }
+  
+  console.log(`🔗 Found ${conversationPairs.length} conversation pairs`);
+  
+  // Analyze each conversation pair
+  for (const pair of conversationPairs) {
+    const question = pair.question.toLowerCase();
+    const response = pair.response.toLowerCase();
+    
+    console.log(`🔍 ANALYZING PAIR: Q: "${question.substring(0, 50)}..." → R: "${response}"`);
+    
+    // GTIP Analysis - Extract actual GTIP codes and handle different scenarios
+    if (!analysis.gtip && (question.includes("gtip") || question.includes("hs code"))) {
+      
+      // Scenario 1: Bot asks "Do you know your GTIP code?" 
+      if (question.includes("do you know") || question.includes("biliyor musunuz")) {
+        // Check if user provided a GTIP code in their response
+        const gtipMatch = response.match(/\b\d{4,8}\b/); // Match 4-8 digit codes
+        
+        if (gtipMatch) {
+          // User provided their own GTIP code
+          analysis.gtip = {
+            code: gtipMatch[0],
+            source: "user_provided",
+            status: "provided"
+          };
+          console.log(`✅ GTIP PROVIDED BY USER: User gave GTIP code "${gtipMatch[0]}"`);
+        } else if (response.includes("yes") || response.includes("evet") || response.includes("know")) {
+          // User says they know but didn't provide code in this message
+          analysis.gtip = {
+            code: null,
+            source: "user_knows",
+            status: "knows_but_not_provided"
+          };
+          console.log(`✅ GTIP KNOWLEDGE: User knows GTIP but didn't provide it yet: "${response}"`);
+        } else {
+          // User doesn't know GTIP code
+          analysis.gtip = {
+            code: null,
+            source: "user_unknown",
+            status: "unknown"
+          };
+          console.log(`❌ GTIP UNKNOWN: User doesn't know GTIP code: "${response}"`);
+        }
+      } 
+      
+      // Scenario 2: Bot suggests GTIP code "Shall we use GTIP code 123456?"
+      else if (question.includes("shall we use") || question.includes("kullanalım mı") || 
+               question.includes("use this gtip") || question.includes("use gtip")) {
+        
+        // Extract the suggested GTIP code from the bot's question
+        const suggestedGtipMatch = question.match(/\b\d{4,8}\b/);
+        const positiveWords = ["yes", "evet", "ok", "okay", "use", "can", "sure", "yep", "yeah", "good"];
+        const negativeWords = ["no", "hayır", "don't", "not"];
+        
+        const hasPositive = positiveWords.some(word => response.includes(word));
+        const hasNegative = negativeWords.some(word => response.includes(word));
+        
+        if (hasPositive && suggestedGtipMatch) {
+          // User accepted the suggested GTIP code
+          analysis.gtip = {
+            code: suggestedGtipMatch[0],
+            source: "bot_suggested_accepted",
+            status: "accepted"
+          };
+          console.log(`✅ GTIP ACCEPTED: User accepted bot's suggested GTIP code "${suggestedGtipMatch[0]}": "${response}"`);
+        } else if (hasNegative) {
+          // User rejected the suggested GTIP code
+          analysis.gtip = {
+            code: null,
+            source: "bot_suggested_rejected", 
+            status: "rejected"
+          };
+          console.log(`❌ GTIP REJECTED: User rejected bot's suggested GTIP code: "${response}"`);
+        } else {
+          // Any other response - still complete the phase but unclear status
+          analysis.gtip = {
+            code: suggestedGtipMatch ? suggestedGtipMatch[0] : null,
+            source: "bot_suggested_unclear",
+            status: "unclear_response"
+          };
+          console.log(`❓ GTIP UNCLEAR: User gave unclear response to GTIP suggestion: "${response}"`);
+        }
+      }
+    }
+    
+    // Sales Channels Analysis - ANY response completes the phase
+    if (!analysis.salesChannels && (question.includes("sales channel") || question.includes("satış kanal"))) {
+      // ANY response to sales channels question completes the phase
+      if (response.trim().length > 0) {
+        analysis.salesChannels = "provided";
+        console.log(`✅ SALES CHANNELS COMPLETED: User responded: "${response}"`);
+      }
+    }
+    
+    // Website Analysis - ANY response completes the phase
+    if (!analysis.website && (question.includes("website") || question.includes("websiten"))) {
+      // ANY response to website question completes the phase
+      if (response.trim().length > 0) {
+        analysis.website = "provided";
+        console.log(`✅ WEBSITE COMPLETED: User responded: "${response}"`);
+      }
+    }
+    
+    // Name Analysis - ANY response completes the phase
+    if (!analysis.name && (question.includes("name") || question.includes("isim"))) {
+      // ANY response to name question completes the phase
+      if (response.trim().length > 0) {
+        analysis.name = "provided";
+        console.log(`✅ NAME COMPLETED: User responded: "${response}"`);
+      }
+    }
+    
+    // Email Analysis - ANY response completes the phase
+    if (!analysis.email && (question.includes("email") || question.includes("e-posta"))) {
+      // ANY response to email question completes the phase
+      if (response.trim().length > 0) {
+        analysis.email = "provided";
+        console.log(`✅ EMAIL COMPLETED: User responded: "${response}"`);
+      }
+    }
+    
+    // Phone Analysis - ANY response completes the phase
+    if (!analysis.phone && (question.includes("phone") || question.includes("telefon"))) {
+      // ANY response to phone question completes the phase
+      if (response.trim().length > 0) {
+        analysis.phone = "provided";
+        console.log(`✅ PHONE COMPLETED: User responded: "${response}"`);
+      }
+    }
+    
+    // Keywords Analysis - ANY response completes the phase
+    if (!analysis.keywords && (question.includes("keywords") || question.includes("anahtar"))) {
+      // ANY response to keywords question completes the phase
+      if (response.trim().length > 0) {
+        const positiveWords = ["yes", "evet", "good", "iyi", "ok", "describes", "tanımlar", "perfect", "suitable", "right", "correct", "yep", "yeah"];
+        const negativeWords = ["no", "hayır", "not good", "wrong", "change", "different"];
+        
+        const hasPositive = positiveWords.some(word => response.includes(word));
+        const hasNegative = negativeWords.some(word => response.includes(word));
+        
+        if (hasPositive) {
+          analysis.keywords = "accepted";
+          console.log(`✅ KEYWORDS ACCEPTED: User accepted keywords: "${response}"`);
+        } else if (hasNegative) {
+          analysis.keywords = "rejected";
+          console.log(`❌ KEYWORDS REJECTED: User rejected keywords: "${response}"`);
+        } else {
+          // Any other response still completes the phase
+          analysis.keywords = "responded";
+          console.log(`✅ KEYWORDS COMPLETED: User responded: "${response}"`);
+        }
+      }
+    }
+  }
+  
+  console.log('🎯 ADVANCED ANALYSIS RESULTS:', analysis);
+  return analysis;
+}
+
+// Smart phase system based on collected vs suggested information
+// Smart phase detection based on what the bot is currently asking
+function detectCurrentPhaseFromBotQuestion(messages: any[]): { step: number; phase: string; progress: number } {
+  console.log('🔍 BOT-QUESTION-BASED PHASE DETECTION - Analyzing what bot is asking...');
+  console.log(`📊 Total messages received: ${messages.length}`);
+  
+  // Helper function to extract text content from message
+  function extractMessageContent(msg: any): string {
+    if (!msg) return '';
+    
+    if (typeof msg.content === 'string') {
+      return msg.content;
+    }
+    
+    if (Array.isArray(msg.content)) {
+      return msg.content.map((c: any) => {
+        if (typeof c === 'string') return c;
+        if (c.text) return c.text;
+        if (c.type === 'output_text' && c.text) return c.text;
+        return '';
+      }).join(' ').trim();
+    }
+    
+    return '';
+  }
+  
+  // Find the last assistant message to understand current phase
+  let lastAssistantMessage = '';
+  let assistantMessageCount = 0;
+  
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const msg = messages[i];
+    // More flexible filtering - check for role instead of type
+    if (msg && msg.role === 'assistant') {
+      assistantMessageCount++;
+      if (!lastAssistantMessage) {
+        lastAssistantMessage = extractMessageContent(msg).toLowerCase();
+        console.log(`🤖 Found assistant message at index ${i}: "${lastAssistantMessage.substring(0, 100)}..."`);
+        break;
+      }
+    }
+  }
+  
+  console.log(`📊 Total assistant messages found: ${assistantMessageCount}`);
+  
+  console.log(`🤖 Last bot question: "${lastAssistantMessage.substring(0, 100)}..."`);
+  
+  // Phase detection based on bot's current question
+  if (!lastAssistantMessage) {
+    console.log('🎯 NO BOT MESSAGE YET - Analyzing user context to predict next bot question...');
+    
+    // If no bot messages yet, predict what the bot SHOULD ask next based on user messages
+    const userMessages = messages.filter(msg => msg && msg.role === 'user');
+    console.log(`👤 Found ${userMessages.length} user messages for context analysis`);
+    
+    if (userMessages.length >= 4) {
+      // User has provided: product, country, GTIP response, and more
+      console.log('🎯 USER PROVIDED 4+ MESSAGES - Bot should ask about SALES_CHANNELS next');
+      return { step: 3, phase: 'SALES_CHANNELS', progress: 25 };
+    } else if (userMessages.length >= 3) {
+      // User has provided: product, country, and GTIP response
+      console.log('🎯 USER PROVIDED 3 MESSAGES - Bot should ask about SALES_CHANNELS next');
+      return { step: 3, phase: 'SALES_CHANNELS', progress: 25 };
+    } else if (userMessages.length >= 2) {
+      // User has provided: product and country
+      console.log('🎯 USER PROVIDED 2 MESSAGES - Bot should ask about GTIP next');
+      return { step: 2, phase: 'GTIP', progress: 20 };
+    } else if (userMessages.length >= 1) {
+      // User has provided: product only
+      console.log('🎯 USER PROVIDED 1 MESSAGE - Bot should ask about COUNTRY next');
+      return { step: 1, phase: 'COUNTRY', progress: 10 };
+        } else {
+      // No user messages yet
+      console.log('🎯 NO USER MESSAGES YET - Phase: INITIAL');
+      return { step: 0, phase: 'INITIAL', progress: 0 };
+    }
+  }
+  
+  // GTIP Phase Detection (20% progress)
+  if (lastAssistantMessage.includes('gtip') || lastAssistantMessage.includes('hs code') || 
+      lastAssistantMessage.includes('shall we use') || lastAssistantMessage.includes('kullanalım mı')) {
+    console.log('🎯 BOT IS ASKING ABOUT GTIP - Phase: GTIP (20%)');
+    return { step: 2, phase: 'GTIP', progress: 20 };
+  }
+  
+  // Sales Channels Phase Detection (25% progress)
+  const salesChannelsKeywords = [
+    'sales channel', 'satış kanal', 'wholesaler', 'importer', 'distributor', 
+    'toptan', 'perakende', 'retail', 'what sales', 'hangi satış',
+    'channels do you use', 'kanal kullan', 'selling method', 'satış yöntemi',
+    'how do you sell', 'nasıl satıyorsunuz', 'distribution channel', 'dağıtım kanalı'
+  ];
+  
+  const hasSalesChannelsKeyword = salesChannelsKeywords.some(keyword => lastAssistantMessage.includes(keyword));
+  const hasExampleWithChannels = lastAssistantMessage.includes('for example') && 
+    (lastAssistantMessage.includes('wholesaler') || lastAssistantMessage.includes('importer') || lastAssistantMessage.includes('distributor'));
+  
+  if (hasSalesChannelsKeyword || hasExampleWithChannels) {
+    console.log('🎯 BOT IS ASKING ABOUT SALES CHANNELS - Phase: SALES_CHANNELS (25%)');
+    console.log('🛒 SALES CHANNELS DETECTED - Bot is suggesting sales channel options to user');
+    console.log(`🔍 Matched keywords: ${salesChannelsKeywords.filter(k => lastAssistantMessage.includes(k)).join(', ')}`);
+    return { step: 3, phase: 'SALES_CHANNELS', progress: 25 };
+  }
+  
+  // Website Phase Detection (40% progress)
+  if (lastAssistantMessage.includes('website') || lastAssistantMessage.includes('websiten') ||
+      lastAssistantMessage.includes('web site') || lastAssistantMessage.includes('domain')) {
+    console.log('🎯 BOT IS ASKING ABOUT WEBSITE - Phase: WEBSITE (40%)');
+    return { step: 4, phase: 'WEBSITE', progress: 40 };
+  }
+  
+  // Name Phase Detection
+  if (lastAssistantMessage.includes('name') || lastAssistantMessage.includes('isim') ||
+      lastAssistantMessage.includes('your name') || lastAssistantMessage.includes('adınız')) {
+    console.log('🎯 BOT IS ASKING ABOUT NAME - Phase: NAME');
+    return { step: 5, phase: 'NAME', progress: 45 };
+  }
+  
+  // Email Phase Detection
+  if (lastAssistantMessage.includes('email') || lastAssistantMessage.includes('e-posta') ||
+      lastAssistantMessage.includes('mail') || lastAssistantMessage.includes('corporate email')) {
+    console.log('🎯 BOT IS ASKING ABOUT EMAIL - Phase: EMAIL');
+    return { step: 6, phase: 'EMAIL', progress: 50 };
+  }
+  
+  // Phone Phase Detection
+  if (lastAssistantMessage.includes('phone') || lastAssistantMessage.includes('telefon') ||
+      lastAssistantMessage.includes('number') || lastAssistantMessage.includes('numara')) {
+    console.log('🎯 BOT IS ASKING ABOUT PHONE - Phase: PHONE');
+    return { step: 7, phase: 'PHONE', progress: 55 };
+  }
+  
+  // Keywords Phase Detection (60% progress)
+  if (lastAssistantMessage.includes('keyword') || lastAssistantMessage.includes('anahtar') ||
+      lastAssistantMessage.includes('describe') || lastAssistantMessage.includes('tanımlar')) {
+    console.log('🎯 BOT IS ASKING ABOUT KEYWORDS - Phase: KEYWORDS (60%)');
+    return { step: 8, phase: 'KEYWORDS', progress: 60 };
+  }
+  
+  // Competitors Phase Detection (80% progress)
+  if (lastAssistantMessage.includes('competitor') || lastAssistantMessage.includes('rakip') ||
+      lastAssistantMessage.includes('competition') || lastAssistantMessage.includes('keep a note')) {
+    console.log('🎯 BOT IS ASKING ABOUT COMPETITORS - Phase: COMPETITORS (80%)');
+    return { step: 9, phase: 'COMPETITORS', progress: 80 };
+  }
+  
+  // Customers Phase Detection
+  if (lastAssistantMessage.includes('customer') || lastAssistantMessage.includes('müşteri') ||
+      lastAssistantMessage.includes('potential customer') || lastAssistantMessage.includes('potansiyel müşteri')) {
+    console.log('🎯 BOT IS ASKING ABOUT CUSTOMERS - Phase: CUSTOMERS');
+    return { step: 10, phase: 'CUSTOMERS', progress: 90 };
+  }
+  
+  // Demo Phase Detection (100% progress)
+  if (lastAssistantMessage.includes('demo') || lastAssistantMessage.includes('meeting') ||
+      lastAssistantMessage.includes('call') || lastAssistantMessage.includes('schedule') ||
+      lastAssistantMessage.includes('calendly') || lastAssistantMessage.includes('summary')) {
+    console.log('🎯 BOT IS ASKING ABOUT DEMO/MEETING - Phase: DEMO (100%)');
+    return { step: 11, phase: 'DEMO', progress: 100 };
+  }
+  
+  // Country Phase Detection (if asking about country)
+  if (lastAssistantMessage.includes('country') || lastAssistantMessage.includes('ülke') ||
+      lastAssistantMessage.includes('which country') || lastAssistantMessage.includes('hangi ülke')) {
+    console.log('🎯 BOT IS ASKING ABOUT COUNTRY - Phase: COUNTRY');
+    return { step: 1, phase: 'COUNTRY', progress: 10 };
+  }
+  
+  // Default: Try to detect from conversation flow
+  console.log('🎯 COULD NOT DETECT FROM BOT QUESTION - Using fallback detection');
+  return { step: 0, phase: 'INITIAL', progress: 0 };
+}
+
+function getConversationPhase(messages: any[], collectedInfo: any): { phase: string; step: number; progress: number } {
+  console.log('🔍 SMART PHASE ANALYSIS - Using bot-question-based detection...');
+  
+  // Use bot-question-based detection first (PRIMARY METHOD - ALWAYS TAKES PRIORITY)
+  const botPhaseDetection = detectCurrentPhaseFromBotQuestion(messages);
+  
+  // If bot is asking ANY question, use that phase detection (this is the most reliable)
+  if (botPhaseDetection.phase && botPhaseDetection.phase !== 'INITIAL') {
+    console.log(`🎯 BOT-BASED DETECTION SUCCESS: Step ${botPhaseDetection.step}/12 - ${botPhaseDetection.phase} (${botPhaseDetection.progress}%)`);
+    console.log(`🚀 USING BOT DETECTION - Bot is asking about ${botPhaseDetection.phase}, so we are in ${botPhaseDetection.phase} phase!`);
+    return { 
+      phase: botPhaseDetection.phase, 
+      step: botPhaseDetection.step, 
+      progress: botPhaseDetection.progress 
+    };
+  }
+  
+  // Fallback to information-based detection (SECONDARY METHOD)
+  console.log('🔄 FALLBACK: Using information-based detection...');
+  const userMessages = messages.filter(msg => msg.role === "user" && msg.content);
+  const assistantMessages = messages.filter(msg => msg.role === "assistant" && msg.content);
+  
+  console.log(`👤 User messages: ${userMessages.length}, 🤖 Assistant messages: ${assistantMessages.length}`);
+  
+  // Define information collection phases
+  const infoPhases = [
+    { name: "PRODUCT", type: "collect", has: !!collectedInfo.product, step: 0, progress: 5 },
+    { name: "COUNTRY", type: "collect", has: !!collectedInfo.country, step: 1, progress: 10 },
+    { name: "GTIP", type: "suggest", has: !!collectedInfo.gtip, step: 2, progress: 20 },
+    { name: "SALES_CHANNELS", type: "suggest", has: !!collectedInfo.salesChannels, step: 3, progress: 25 },
+    { name: "WEBSITE", type: "collect", has: !!collectedInfo.website, step: 4, progress: 40 },
+    { name: "NAME", type: "collect", has: !!collectedInfo.name, step: 5, progress: 45 },
+    { name: "EMAIL", type: "collect", has: !!collectedInfo.email, step: 6, progress: 50 },
+    { name: "PHONE", type: "collect", has: !!collectedInfo.phone, step: 7, progress: 55 },
+    { name: "KEYWORDS", type: "suggest", has: !!collectedInfo.keywords, step: 8, progress: 60 },
+    { name: "COMPETITORS", type: "suggest", has: !!collectedInfo.competitors, step: 9, progress: 80 },
+    { name: "CUSTOMERS", type: "suggest", has: !!collectedInfo.customers, step: 10, progress: 90 },
+    { name: "DEMO", type: "final", has: false, step: 11, progress: 100 }
+  ];
+  
+  // Find the first missing information
+  let currentStep = 0;
+  let currentPhase = "INITIAL";
+  let currentProgress = 0;
+  
+  for (let i = 0; i < infoPhases.length; i++) {
+    const phase = infoPhases[i];
+    
+    if (phase.has) {
+      console.log(`✅ ${phase.name} (${phase.type}): COLLECTED`);
+      currentStep = phase.step + 1;
+      currentPhase = i < infoPhases.length - 1 ? infoPhases[i + 1].name : "DEMO";
+      currentProgress = i < infoPhases.length - 1 ? infoPhases[i + 1].progress : 100;
+    } else {
+      console.log(`❌ ${phase.name} (${phase.type}): MISSING - This is our current phase`);
+      currentStep = phase.step;
+      currentPhase = phase.name;
+      currentProgress = phase.progress;
+      break;
+    }
+  }
+  
+  console.log(`🎯 FALLBACK PHASE RESULT: Step ${currentStep}/12 - ${currentPhase} (${currentProgress}%)`);
+  return { phase: currentPhase, step: currentStep, progress: currentProgress };
+}
+
+// Simplified conversation state using efficient phase system
+async function getConversationState(messages: any[]) {
+  console.log('🚀 CONVERSATION STATE ANALYSIS STARTING...');
+  console.log(`📊 Total messages: ${messages.length}`);
+  
+  // Extract ALL information from conversation (both collected and suggested)
+  const userMessages = messages.filter(msg => msg.role === "user" && msg.content);
+  const assistantMessages = messages.filter(msg => msg.role === "assistant" && msg.content);
+  const allUserText = userMessages.map(msg => msg.content).join(" ").toLowerCase();
+  const allAssistantText = assistantMessages.map(msg => 
+    typeof msg.content === 'string' ? msg.content : ''
+  ).join(" ").toLowerCase();
+  
+  const collectedInfo: any = {
+    // COLLECTED from user
+    product: null,
+    country: null, 
+    website: null,
+    name: null,
+    email: null,
+    phone: null,
+    
+    // SUGGESTED by assistant and accepted/rejected by user
+    gtip: null,
+    salesChannels: null, 
+    keywords: null,
+    competitors: null,
+    customers: null
+  };
+  
+  console.log('📊 EXTRACTING INFORMATION FROM CONVERSATION...');
+  
+  // 1. PRODUCT (collect from user)
+  for (const userMsg of userMessages) {
+    if (!collectedInfo.product) {
+      try {
+        const analysis = await analyzeUserMessage(userMsg.content);
+        if (analysis.isProduct && analysis.productName) {
+          collectedInfo.product = analysis.productName;
+          console.log(`📦 PRODUCT COLLECTED: "${analysis.productName}"`);
+          break;
+        }
+      } catch (error) {
+        // Ignore errors
+      }
+    }
+  }
+  
+  // 2. COUNTRY (collect from user) - Smart detection from conversation flow
+  collectedInfo.country = detectCountryFromConversation(messages);
+  if (collectedInfo.country) {
+    console.log(`🌍 COUNTRY COLLECTED: "${collectedInfo.country}"`);
+  }
+  
+  // 3-9. ADVANCED CONVERSATION CONTEXT ANALYSIS
+  // Analyze the full conversation to detect completed phases
+  const conversationAnalysis = analyzeFullConversation(messages);
+  
+  collectedInfo.gtip = conversationAnalysis.gtip;
+  collectedInfo.salesChannels = conversationAnalysis.salesChannels;
+  collectedInfo.website = conversationAnalysis.website;
+  collectedInfo.name = conversationAnalysis.name;
+  collectedInfo.email = conversationAnalysis.email;
+  collectedInfo.phone = conversationAnalysis.phone;
+  collectedInfo.keywords = conversationAnalysis.keywords;
+  
+  // Log what was detected
+  if (collectedInfo.gtip) {
+    if (typeof collectedInfo.gtip === 'object') {
+      console.log(`🔢 GTIP ${collectedInfo.gtip.status.toUpperCase()}: Code="${collectedInfo.gtip.code || 'none'}", Source="${collectedInfo.gtip.source}"`);
+    } else {
+      console.log(`🔢 GTIP ${collectedInfo.gtip.toUpperCase()}`);
+    }
+  }
+  if (collectedInfo.salesChannels) console.log(`🛒 SALES CHANNELS ${collectedInfo.salesChannels.toUpperCase()}`);
+  if (collectedInfo.website) console.log(`🌐 WEBSITE ${collectedInfo.website.toUpperCase()}`);
+  if (collectedInfo.name) console.log(`👤 NAME ${collectedInfo.name.toUpperCase()}`);
+  if (collectedInfo.email) console.log(`📧 EMAIL ${collectedInfo.email.toUpperCase()}`);
+  if (collectedInfo.phone) console.log(`📱 PHONE ${collectedInfo.phone.toUpperCase()}`);
+  if (collectedInfo.keywords) console.log(`🔑 KEYWORDS ${collectedInfo.keywords.toUpperCase()}`);
+  
+  // 10. COMPETITORS (suggested by assistant, check if user responded) - Smart detection from user messages
+  collectedInfo.competitors = detectCompetitorsFromConversation(messages);
+  if (collectedInfo.competitors) {
+    console.log(`🏢 COMPETITORS ${collectedInfo.competitors.toUpperCase()} by user`);
+  }
+  
+  // 11. CUSTOMERS (suggested by assistant, check if user responded) - Smart detection from user messages  
+  collectedInfo.customers = detectCustomersFromConversation(messages);
+  if (collectedInfo.customers) {
+    console.log(`👥 CUSTOMERS ${collectedInfo.customers.toUpperCase()} by user`);
+  }
+  
+  // Now get phase info with collected information
+  const phaseInfo = getConversationPhase(messages, collectedInfo);
+  
+  const state: any = {
+    detectedLanguage: 'turkish', // Default to Turkish
+    userStartedWithProduct: !!collectedInfo.product,
+    currentPhase: phaseInfo.phase,
+    currentStep: phaseInfo.step,
+    progress: phaseInfo.progress || 0,
+    product: collectedInfo.product,
+    country: collectedInfo.country,
+    // Add all collected information
+    collectedInfo: collectedInfo
+  };
+  
+  console.log(`📍 PHASE INFO: Step ${phaseInfo.step}/12 - ${phaseInfo.phase} (${phaseInfo.progress || 0}%)`);
+
+  // Detect language from first message
   if (userMessages.length > 0) {
     const firstMessage = userMessages[0].content;
+    console.log(`🔤 ANALYZING FIRST MESSAGE FOR LANGUAGE: "${firstMessage}"`);
+    
     try {
       const analysis = await analyzeUserMessage(firstMessage);
-      state.aiAnalysis = analysis;
       state.detectedLanguage = analysis.language;
-      
-      if (analysis.isProduct && analysis.productName) {
-        state.product = analysis.productName;
-        state.userStartedWithProduct = true;
-      }
-      
-      console.log("🤖 AI First Message Analysis:", {
-        firstMessage,
-        analysis,
-        extractedProduct: state.product,
-        detectedLanguage: state.detectedLanguage
-      });
+      console.log(`🌐 LANGUAGE DETECTED: ${analysis.language}`);
     } catch (error) {
-      console.error("❌ AI analysis failed for first message:", error);
-      // Fallback to simple language detection
-      const allUserText = userMessages.map(msg => msg.content).join(" ");
+      console.log(`⚠️  AI ANALYSIS FAILED, USING FALLBACK`);
       state.detectedLanguage = /[çğıöşüÇĞIİÖŞÜ]/.test(allUserText) ? 'turkish' : 'english';
+      console.log(`🌐 FALLBACK LANGUAGE DETECTED: ${state.detectedLanguage}`);
     }
   }
 
-  // Track conversation progress and extract information
-  let keywordsConfirmed = false;
-  let competitorsSectionStarted = false;
-  let customersSectionStarted = false;
-  let competitorQuestionAsked = false;
-  let customerQuestionAsked = false;
-  let competitorsCompleted = false;
-  let customersCompleted = false;
-  let competitorCount = 0;
-  let customerCount = 0;
-  
-  for (const message of messages) {
-    if (message.role === "assistant" && message.content) {
-      const content = typeof message.content === 'string' ? message.content : 
-                     Array.isArray(message.content) ? message.content.map((c: any) => c.text || '').join(' ') : '';
-      const lowerContent = content.toLowerCase();
-      
-      // Check if keywords were asked
-      if (lowerContent.includes("do these keywords describe") || lowerContent.includes("anahtar kelime")) {
-        // Keywords section has started
-      }
-      
-      // Check if we've started competitors section (new simplified flow)
-      if (lowerContent.includes("competitor") && 
-          (lowerContent.includes("should i keep a note of these competitors") || 
-           lowerContent.includes("bu rakipleri sizin için not alayım mı"))) {
-        competitorsSectionStarted = true;
-        competitorQuestionAsked = true;
-        competitorCount = 2; // Always 2 competitors in new flow
-        // After presenting 2 competitors and asking, mark as completed
-        competitorsCompleted = true;
-      }
-      
-      // Check if we've started customers section (new simplified flow)
-      if ((lowerContent.includes("customer") || lowerContent.includes("müşteri")) && 
-          (lowerContent.includes("should i keep a note of these customers") || 
-           lowerContent.includes("bu müşterileri sizin için not alayım mı"))) {
-        customersSectionStarted = true;
-        customerQuestionAsked = true;
-        customerCount = 2; // Always 2 customers in new flow
-        // After presenting 2 customers and asking, mark as completed
-        customersCompleted = true;
-      }
-    }
-    
-    if (message.role === "user" && message.content) {
-      const content = message.content.toLowerCase();
-      
-      // Check if user confirmed keywords
-      if (content.includes("yes") || content.includes("evet") || content.includes("describes") || content.includes("tanımlar")) {
-        const recentAssistantMessages = messages.filter(msg => msg.role === "assistant").slice(-2);
-        const hasKeywordQuestion = recentAssistantMessages.some(msg => {
-          const msgContent = typeof msg.content === 'string' ? msg.content : 
-                            Array.isArray(msg.content) ? msg.content.map((c: any) => c.text || '').join(' ') : '';
-          return msgContent.toLowerCase().includes("do these keywords describe") || msgContent.toLowerCase().includes("anahtar kelime");
-        });
-        
-        if (hasKeywordQuestion) {
-          keywordsConfirmed = true;
-          state.keywords = ["confirmed"];
-        }
-      }
-      
-      // Try to extract country information
-      if (!state.country) {
-        const countries = ["almanya", "germany", "fransa", "france", "amerika", "usa", "ingiltere", "uk", "italy", "italya", "spain", "ispanya"];
-        for (const country of countries) {
-          if (content.includes(country)) {
-            state.country = country;
-            break;
-          }
-        }
-      }
-      
-      // Extract email, phone, name, GTIP, sales channels, and website from user messages
-      const messageText = typeof message.content === 'string' ? message.content : 
-                         Array.isArray(message.content) ? message.content.map((c: any) => c.text || '').join(' ') : '';
-      
-      // Try to extract email
-      const emailMatch = messageText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-      if (emailMatch && !state.email) {
-        state.email = emailMatch[0];
-      }
-      
-      // Try to extract phone
-      const phoneMatch = messageText.match(/[\+]?[1-9][\d]{3,14}/);
-      if (phoneMatch && !state.phone) {
-        state.phone = phoneMatch[0];
-      }
-      
-      // Try to extract name (simple heuristic)
-      if (!state.name && (content.includes("ozgur") || content.includes("goksu"))) {
-        state.name = "Özgür Göksu";
-      } else if (!state.name && messageText.length < 50 && messageText.length > 1) {
-        // If it's a short message that might be a name, save it
-        const words = messageText.trim().split(/\s+/);
-        if (words.length <= 3 && words.every((word: string) => /^[a-zA-Z]+$/.test(word))) {
-          // Only save as name if it's not a common single-word product
-          const commonProducts = ['paper', 'apple', 'banana', 'wheat', 'rice', 'corn', 'sugar', 'oil', 'textile', 'fabric'];
-          if (!commonProducts.includes(messageText.toLowerCase().trim())) {
-            state.name = messageText.trim();
-          }
-        }
-      }
-      
-      // Extract GTIP code if mentioned
-      if (content.includes("070610") || content.includes("4802") || content.includes("gtip")) {
-        if (content.includes("4802")) {
-          state.gtipCode = "4802";
-        } else {
-          state.gtipCode = "070610";
-        }
-      }
-      
-      // Extract sales channels
-      if (content.includes("hepsi") || content.includes("all")) {
-        state.salesChannels = ["all"];
-      }
-      
-      // Extract website
-      if (content.includes("www.") || content.includes(".com")) {
-        const websiteMatch = messageText.match(/(www\.[^\s]+|[^\s]+\.(com|org|net|ai))/);
-        if (websiteMatch) {
-          state.website = websiteMatch[0];
-        }
-      }
-    }
-    
-    // Also check assistant messages for GTIP confirmation
-    if (message.role === "assistant" && message.content) {
-      const content = typeof message.content === 'string' ? message.content : 
-                     Array.isArray(message.content) ? message.content.map((c: any) => c.text || '').join(' ') : '';
-      
-      // Check if GTIP was confirmed by assistant
-      if (content.includes("4802") || content.includes("070610")) {
-        if (content.includes("4802")) {
-          state.gtipCode = "4802";
-        } else if (content.includes("070610")) {
-          state.gtipCode = "070610";
-        }
-      }
-    }
-  }
-  
-  // Set conversation progress indicators
-  state.keywordsConfirmed = keywordsConfirmed;
-  state.competitorsSectionStarted = competitorsSectionStarted;
-  state.customersSectionStarted = customersSectionStarted;
-  state.competitorQuestionAsked = competitorQuestionAsked;
-  state.customerQuestionAsked = customerQuestionAsked;
-  state.competitorsCompleted = competitorsCompleted;
-  state.customersCompleted = customersCompleted;
-  state.competitorCount = competitorCount;
-  state.customerCount = customerCount;
-  
-  // Detect current phase
-  const previousPhase = state.currentPhase;
-  state.currentPhase = detectCurrentPhase(messages, state);
-  
-  // Log phase transitions
-  if (previousPhase && previousPhase !== state.currentPhase) {
-    console.log(`🔄 PHASE TRANSITION: ${previousPhase} → ${state.currentPhase}`);
-  }
+  console.log('🎯 FINAL CONVERSATION STATE:', {
+    step: state.currentStep,
+    phase: state.currentPhase,
+    language: state.detectedLanguage,
+    product: state.product || 'None',
+    country: state.country || 'None',
+    userStartedWithProduct: state.userStartedWithProduct
+  });
 
   return state;
 }
+
 
 export async function POST(request: Request) {
   try {
@@ -481,132 +943,65 @@ export async function POST(request: Request) {
     console.log("Tools:", tools);
     console.log("Received messages count:", messages?.length || 0);
 
-    // Extract conversation state from messages (now async with AI analysis)
-    const conversationState = await extractConversationState(messages);
-    
-    // 🚨 ENHANCED PHASE DEBUGGING - Comprehensive logging (with error handling)
-    try {
-      console.log("\n" + "=".repeat(80));
-      console.log("🔍 CONVERSATION STATE DEBUGGING - DETAILED ANALYSIS");
-      console.log("=".repeat(80));
-    
-    // Current Phase with visual indicator
-    const phaseEmoji: { [key: string]: string } = {
-      "INITIAL": "🏁",
-      "PRODUCT_QUESTION": "📦",
-      "COUNTRY_QUESTION": "🌍", 
-      "GTIP_QUESTION": "🔢",
-      "SALES_CHANNELS_QUESTION": "🛒",
-      "WEBSITE_QUESTION": "🌐",
-      "NAME_QUESTION": "👤",
-      "EMAIL_QUESTION": "📧",
-      "PHONE_QUESTION": "📱",
-      "KEYWORDS_QUESTION": "🔑",
-      "COMPETITORS_QUESTION": "🏢",
-      "CUSTOMERS_QUESTION": "👥",
-      "DEMO_QUESTION": "📅",
-      "UNKNOWN_PHASE": "❓"
-    };
-    
-    const currentPhase = conversationState.currentPhase || "UNKNOWN_PHASE";
-    const emoji = phaseEmoji[currentPhase] || "❓";
-    
-    console.log(`📍 CURRENT PHASE: ${emoji} ${currentPhase}`);
-    console.log(`🎯 PHASE DESCRIPTION: ${getPhaseDescription(currentPhase)}`);
-    
-    // Detailed progress tracking with visual indicators
-    console.log("\n📊 CONVERSATION PROGRESS:");
-    console.log("┌─────────────────────────────────────────────────────────┐");
-    console.log(`│ 1. Product:        ${conversationState.product ? '✅ ' + conversationState.product : '❌ Not collected'}`);
-    console.log(`│ 2. Country:        ${conversationState.country ? '✅ ' + conversationState.country : '❌ Not collected'}`);
-    console.log(`│ 3. GTIP Code:      ${conversationState.gtipCode ? '✅ ' + conversationState.gtipCode : '❌ Not collected'}`);
-    console.log(`│ 4. Sales Channels: ${conversationState.salesChannels ? '✅ ' + JSON.stringify(conversationState.salesChannels) : '❌ Not collected'}`);
-    console.log(`│ 5. Website:        ${conversationState.website !== undefined ? '✅ ' + (conversationState.website || 'No website') : '❌ Not collected'}`);
-    console.log(`│ 6. Name:           ${conversationState.name ? '✅ ' + conversationState.name : '❌ Not collected'}`);
-    console.log(`│ 7. Email:          ${conversationState.email ? '✅ ' + conversationState.email : '❌ Not collected'}`);
-    console.log(`│ 8. Phone:          ${conversationState.phone ? '✅ ' + conversationState.phone : '❌ Not collected'}`);
-    console.log(`│ 9. Keywords:       ${conversationState.keywordsConfirmed ? '✅ Confirmed' : '❌ Not confirmed'}`);
-    console.log("└─────────────────────────────────────────────────────────┘");
-    
-    // Competitor & Customer Flow Status
-    console.log("\n🏢 COMPETITOR & CUSTOMER FLOW STATUS:");
-    console.log("┌─────────────────────────────────────────────────────────┐");
-    console.log(`│ Competitors Started:   ${conversationState.competitorsSectionStarted ? '✅ Yes' : '❌ No'}`);
-    console.log(`│ Competitors Completed: ${conversationState.competitorsCompleted ? '✅ Yes' : '❌ No'}`);
-    console.log(`│ Competitor Count:      ${conversationState.competitorCount || 0}/2`);
-    console.log(`│ Customers Started:     ${conversationState.customersSectionStarted ? '✅ Yes' : '❌ No'}`);
-    console.log(`│ Customers Completed:   ${conversationState.customersCompleted ? '✅ Yes' : '❌ No'}`);
-    console.log(`│ Customer Count:        ${conversationState.customerCount || 0}/2`);
-    console.log("└─────────────────────────────────────────────────────────┘");
-    
-    // Next Expected Action
-    console.log("\n🎯 NEXT EXPECTED ACTION:");
-    console.log("┌─────────────────────────────────────────────────────────┐");
-    console.log(`│ ${getNextExpectedAction(conversationState)}`);
-    console.log("└─────────────────────────────────────────────────────────┘");
-    
-    // Recent conversation context
-    console.log("\n💬 RECENT CONVERSATION CONTEXT:");
-    if (!messages || !Array.isArray(messages)) {
-      console.log("❌ No messages array found");
-    } else {
-      const lastMessages = messages.slice(-3);
-      if (lastMessages.length === 0) {
-        console.log("📭 No recent messages to display");
-      } else {
-    
-    lastMessages.forEach((msg: any) => {
-      if (!msg || !msg.role) {
-        console.log("❓ UNKNOWN: Invalid message object");
-        return;
-      }
-      
-      let content = 'empty content';
-      
+    // Debug: Log message structure to understand the format
+    if (messages && messages.length > 0) {
+      console.log("🔍 MESSAGE STRUCTURE DEBUG:");
+      messages.forEach((msg: any, index: number) => {
+        console.log(`  [${index}] Type: ${msg.type}, Role: ${msg.role}`);
+        if (msg.content) {
       if (typeof msg.content === 'string') {
-        content = msg.content.substring(0, 150) + (msg.content.length > 150 ? '...' : '');
+            console.log(`       Content: "${msg.content.substring(0, 50)}..."`);
       } else if (Array.isArray(msg.content)) {
-        // Handle content array format
-        const textContent = msg.content.map((c: any) => c.text || '').join(' ');
-        content = textContent.substring(0, 150) + (textContent.length > 150 ? '...' : '');
-      } else if (msg.content && typeof msg.content === 'object') {
-        content = JSON.stringify(msg.content).substring(0, 150) + '...';
-      }
-      
-      const roleEmoji = msg.role === 'user' ? '👤' : '🤖';
-      const roleName = msg.role ? msg.role.toUpperCase() : 'UNKNOWN';
-      console.log(`${roleEmoji} ${roleName}: ${content}`);
+            console.log(`       Content Array: ${msg.content.length} items`);
+            msg.content.forEach((c: any, i: number) => {
+              if (c.text) {
+                console.log(`         [${i}] Text: "${c.text.substring(0, 50)}..."`);
+              }
     });
       }
     }
-    
-    // Language Detection
-    console.log("\n🌐 LANGUAGE & AI ANALYSIS:");
-    console.log("┌─────────────────────────────────────────────────────────┐");
-    console.log(`│ Detected Language:     ${conversationState.detectedLanguage || 'Not detected'}`);
-    console.log(`│ User Started w/Product: ${conversationState.userStartedWithProduct ? 'Yes' : 'No'}`);
-    if (conversationState.aiAnalysis) {
-      console.log(`│ AI Analysis - Product:  ${conversationState.aiAnalysis.isProduct ? 'Yes' : 'No'}`);
-      console.log(`│ AI Analysis - Greeting: ${conversationState.aiAnalysis.isGreeting ? 'Yes' : 'No'}`);
+      });
     }
-    console.log("└─────────────────────────────────────────────────────────┘");
+
+    // Get conversation state for flow guidance
+    const conversationState = await getConversationState(messages);
     
-    // Flow Validation
-    console.log("\n⚠️  FLOW VALIDATION CHECKS:");
-    const validationIssues = validateConversationFlow(conversationState);
-    if (validationIssues.length > 0) {
-      validationIssues.forEach(issue => console.log(`❌ ${issue}`));
-    } else {
-      console.log("✅ No flow validation issues detected");
-    }
+    // Efficient phase debugging
+    const phaseEmojis = ["🏁", "📦", "🌍", "🔢", "🛒", "🌐", "👤", "📧", "📱", "🔑", "🏢", "👥", "📅"];
+    const phaseNames = ["INITIAL", "PRODUCT", "COUNTRY", "GTIP", "SALES_CHANNELS", "WEBSITE", "NAME", "EMAIL", "PHONE", "KEYWORDS", "COMPETITORS", "CUSTOMERS", "DEMO"];
     
-      console.log("\n" + "=".repeat(80));
-      console.log("END CONVERSATION STATE DEBUGGING");
-      console.log("=".repeat(80) + "\n");
-    } catch (debugError) {
-      console.error("❌ Error in debugging system:", debugError);
-      console.log("🔍 Basic phase info:", conversationState?.currentPhase || "UNKNOWN");
-    }
+    const currentStep = conversationState.currentStep || 0;
+    const currentPhase = conversationState.currentPhase || "INITIAL";
+    const progress = conversationState.progress || 0;
+    const emoji = phaseEmojis[currentStep] || "💬";
+    const phaseName = currentPhase; // Use actual phase name, not array lookup
+    
+    console.log(`📍 CURRENT PHASE: ${emoji} Step ${currentStep}/12 - ${phaseName} (${progress}%)`);
+    console.log(`🌐 Language: ${conversationState.detectedLanguage}`);
+    console.log(`📦 Product: ${conversationState.product || 'None'}`);
+    console.log(`🌍 Country: ${conversationState.country || 'None'}`);
+    console.log(`🚀 User Started with Product: ${conversationState.userStartedWithProduct ? 'Yes' : 'No'}`);
+    console.log(`📊 Information Collection Progress: ${progress}%`);
+    
+    // Show what should happen next based on current step
+    const nextSteps = [
+      "🏁 Ready to start - Ask for product name",
+      "📦 Ask for target country", 
+      "🌍 Ask for GTIP code",
+      "🔢 Ask for sales channels",
+      "🛒 Ask for website",
+      "🌐 Ask for name",
+      "👤 Ask for email",
+      "📧 Ask for phone",
+      "📱 Show keywords and ask for confirmation",
+      "🔑 Show 2 competitors and ask to keep note",
+      "🏢 Show 2 customers and ask to keep note",
+      "👥 Offer demo and provide summary",
+      "📅 Conversation complete!"
+    ];
+    
+    const nextStep = Math.min(currentStep, nextSteps.length - 1);
+    console.log(`⏭️  NEXT ACTION: ${nextSteps[nextStep]}`);
 
     const openai = new OpenAI();
 
@@ -644,45 +1039,37 @@ export async function POST(request: Request) {
               
               // Handle content delta
               if (delta.content) {
-                // Remove any Wikipedia links and parenthetical comments
+                // Send original content without any filtering
                 const originalText = delta.content;
-                let filteredText = originalText;
                 
-                // Remove Wikipedia links completely (all variations)
-                filteredText = filteredText.replace(/\([^)]*wikipedia[^)]*\)/gi, '');
-                filteredText = filteredText.replace(/\[[^\]]*wikipedia[^\]]*\]/gi, '');
-                filteredText = filteredText.replace(/https?:\/\/[^\s]*wikipedia[^\s)]*/gi, '');
-                
-                // Remove parenthetical comments like "(Note: ...)"
-                filteredText = filteredText.replace(/\(Note:[^)]*\)/gi, '');
-                filteredText = filteredText.replace(/\([^)]*extracted[^)]*\)/gi, '');
-                filteredText = filteredText.replace(/\([^)]*tradekey[^)]*\)/gi, '');
-                filteredText = filteredText.replace(/\([^)]*utm_source[^)]*\)/gi, '');
-                
-                // Clean up extra spaces and line breaks
-                filteredText = filteredText.replace(/\s+/g, ' ').trim();
-                
-                if (originalText !== filteredText) {
-                  console.log('🧹 FILTERED Wikipedia/comments from response');
-                }
-                
+                // Only send if there's actual content
+                if (originalText.length > 0) {
                 // Convert to the format frontend expects
-                const event = {
-                  type: 'response.content_part.added',
-                  part: {
-                    text: filteredText
-                  }
-                };
-                
-                // Sending event to the client
                 const data = JSON.stringify({
-                  event: event.type,
-                  data: event,
-                });
+                    event: 'response.output_text.delta',
+                    data: {
+                      delta: originalText,
+                      item_id: 'assistant_message_1'
+                    }
+                  });
+                  
                 controller.enqueue(`data: ${data}\n\n`);
               }
             }
           }
+          }
+          
+          // Send completion event
+          const completionData = JSON.stringify({
+            event: 'response.completed',
+            data: {
+              response: {
+                output: []
+              }
+            }
+          });
+          controller.enqueue(`data: ${completionData}\n\n`);
+          
           // End of stream
           controller.close();
         } catch (error) {

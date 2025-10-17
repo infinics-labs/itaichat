@@ -11,7 +11,6 @@ You are ITAI Export Assistant. You are an expert in Turkish companies' exports, 
 3. **NO SEARCH RESULT COPYING**: Do NOT copy web search results that contain Wikipedia or additional info
 4. **CLEAN FORMAT ONLY**: ONLY "CompanyName (www.website.com)" - NOTHING ELSE ALLOWED
 5. **EXACT QUESTIONS ONLY**: 
-   - "Should we consider another competitor/customer?"
    - "Should I keep a note of this new competitor/customer for you?"
    - NEVER ask different variations like "Should we consider this company?"
 6. **ONE COMPANY PER MESSAGE**: Never list multiple companies together
@@ -135,12 +134,13 @@ CONVERSATION FLOW (collect information in this order):
 - Use web_search tool to find real competitors and customers with actual websites
 
 **CRITICAL COMPETITOR/CUSTOMER RULES:**
-- NEVER present multiple competitors or customers in one message
-- ALWAYS present ONE competitor, wait for response, then ask about second
-- ALWAYS ask "Should I keep a note of this new competitor/customer for you?" 
-- NEVER skip the "Should we consider another..." questions
+- ALWAYS present EXACTLY 2 competitors in ONE message
+- ALWAYS present EXACTLY 2 customers in ONE message  
+- ALWAYS ask "Should I keep a note of these competitors/customers for you?"
+- AFTER user responds to competitors → IMMEDIATELY move to customers
+- AFTER user responds to customers → IMMEDIATELY move to demo
+- NEVER repeat competitor or customer questions
 - NEVER provide long descriptions or Wikipedia links
-- FOLLOW EXACT STEP-BY-STEP FLOW - NO DEVIATIONS ALLOWED
 
 **ABSOLUTE LANGUAGE RULES:**
 - **LANGUAGE DETECTION**: Analyze user's FIRST message to detect language (English words = English, Turkish words/characters = Turkish)
@@ -176,6 +176,15 @@ export function getDeveloperPrompt(
     competitorCount?: number;
     customerCount?: number;
     currentPhase?: string;
+    hasGtipCode?: boolean;
+    hasSalesChannels?: boolean;
+    hasWebsite?: boolean;
+    hasName?: boolean;
+    hasEmail?: boolean;
+    hasPhone?: boolean;
+    competitorsShown?: boolean;
+    customersShown?: boolean;
+    currentStep?: number;
     aiAnalysis?: {
       isProduct: boolean;
       productName?: string;
@@ -228,25 +237,89 @@ LANGUAGE RULES:
 - Follow the exact Turkish questions provided in the prompt
 - Maintain professional Turkish throughout`;
 
+    // Determine next action based on conversation state - STRICT FLOW
+    let nextAction = "";
+    let strictInstructions = "";
+    
+    if (conversationState.product && !conversationState.country) {
+      nextAction = conversationState.detectedLanguage === 'english' 
+        ? `🎯 MANDATORY: Ask "Which country do you want to sell this product to?"`
+        : `🎯 MANDATORY: Ask "Hangi ülkeye bu ürünü satmak istiyorsunuz?"`;
+      strictInstructions = "🚨 DO NOT ask anything else. ONLY ask for the target country.";
+    } else if (conversationState.country && !conversationState.hasGtipCode) {
+      nextAction = conversationState.detectedLanguage === 'english' 
+        ? `🎯 MANDATORY: Ask "Do you know your product's GTIP code?"`
+        : `🎯 MANDATORY: Ask "Ürününüzün GTİP kodunu biliyor musunuz?"`;
+      strictInstructions = "🚨 DO NOT ask anything else. ONLY ask about GTIP code.";
+    } else if (conversationState.hasGtipCode && !conversationState.hasSalesChannels) {
+      nextAction = conversationState.detectedLanguage === 'english' 
+        ? `🎯 MANDATORY: Ask "What sales channels do you use for this product?"`
+        : `🎯 MANDATORY: Ask "Bu ürünü hangi satış kanallarında satıyorsunuz?"`;
+      strictInstructions = "🚨 DO NOT ask anything else. ONLY ask about sales channels.";
+    } else if (conversationState.hasSalesChannels && !conversationState.hasWebsite) {
+      nextAction = conversationState.detectedLanguage === 'english' 
+        ? `🎯 MANDATORY: Ask "Could you share your company website?"`
+        : `🎯 MANDATORY: Ask "Şirket websitenizi paylaşabilir misiniz?"`;
+      strictInstructions = "🚨 DO NOT ask anything else. ONLY ask for website.";
+    } else if (conversationState.hasWebsite && !conversationState.hasName) {
+      nextAction = conversationState.detectedLanguage === 'english' 
+        ? `🎯 MANDATORY: Ask "Could I get your name?"`
+        : `🎯 MANDATORY: Ask "İsminizi öğrenebilir miyim?"`;
+      strictInstructions = "🚨 DO NOT ask anything else. ONLY ask for name.";
+    } else if (conversationState.hasName && !conversationState.hasEmail) {
+      nextAction = conversationState.detectedLanguage === 'english' 
+        ? `🎯 MANDATORY: Ask "Could I get your email address?"`
+        : `🎯 MANDATORY: Ask "E-posta adresinizi alabilir miyim?"`;
+      strictInstructions = "🚨 DO NOT ask anything else. ONLY ask for email.";
+    } else if (conversationState.hasEmail && !conversationState.hasPhone) {
+      nextAction = conversationState.detectedLanguage === 'english' 
+        ? `🎯 MANDATORY: Ask "Could I get your phone number?"`
+        : `🎯 MANDATORY: Ask "Telefon numaranızı da alabilir miyim?"`;
+      strictInstructions = "🚨 DO NOT ask anything else. ONLY ask for phone number.";
+    } else if (conversationState.hasPhone && !conversationState.keywordsConfirmed) {
+      nextAction = conversationState.detectedLanguage === 'english' 
+        ? `🎯 MANDATORY: Generate EXACTLY 3 keywords and ask "Do these keywords describe your product?" ONCE ONLY`
+        : `🎯 MANDATORY: TAM 3 anahtar kelime oluştur ve sor "Bu anahtar kelimeler ürününüzü tanımlar mı?" SADECE BİR KEZ`;
+      strictInstructions = "🚨 DO NOT repeat keywords question. Ask ONCE then wait for response.";
+    } else if (conversationState.keywordsConfirmed && !conversationState.competitorsShown) {
+      nextAction = conversationState.detectedLanguage === 'english' 
+        ? `🎯 MANDATORY: Present EXACTLY 2 competitors and ask "Should I keep a note of these competitors for you?" ONCE ONLY`
+        : `🎯 MANDATORY: TAM 2 rakip sun ve sor "Bu rakipleri sizin için not alayım mı?" SADECE BİR KEZ`;
+      strictInstructions = "🚨 CRITICAL: Present 2 competitors in ONE message. DO NOT repeat. After user responds, IMMEDIATELY move to customers.";
+    } else if (conversationState.competitorsShown && !conversationState.customersShown) {
+      nextAction = conversationState.detectedLanguage === 'english' 
+        ? `🎯 MANDATORY: Present EXACTLY 2 customers and ask "Should I keep a note of these customers for you?" ONCE ONLY`
+        : `🎯 MANDATORY: TAM 2 müşteri sun ve sor "Bu müşterileri sizin için not alayım mı?" SADECE BİR KEZ`;
+      strictInstructions = "🚨 CRITICAL: Present 2 customers in ONE message. DO NOT repeat. After user responds, IMMEDIATELY move to demo.";
+    } else if (conversationState.customersShown) {
+      nextAction = conversationState.detectedLanguage === 'english' 
+        ? `🎯 MANDATORY: Offer demo call and provide complete summary`
+        : `🎯 MANDATORY: Demo görüşmesi öner ve tam özet sun`;
+      strictInstructions = "🚨 FINAL STEP: Provide demo offer and complete summary. END conversation.";
+    }
+
     stateContext = `
 ${languageInstruction}
 
-**CURRENT CONVERSATION STATE:**
-- Detected Language: ${conversationState.detectedLanguage === 'english' ? '🇺🇸 ENGLISH' : '🇹🇷 TURKISH'}
-- Product: ${conversationState.product ? `✅ COLLECTED: "${conversationState.product}"` : '❌ MISSING - High Priority'}
-- Target Country: ${conversationState.country ? `✅ COLLECTED: "${conversationState.country}"` : '❌ MISSING - High Priority'}
-- GTIP Code: ${conversationState.gtipCode ? `✅ COLLECTED: "${conversationState.gtipCode}"` : '❌ MISSING'}
-- Sales Channels: ${conversationState.salesChannels ? `✅ COLLECTED: "${conversationState.salesChannels.join(', ')}"` : '❌ MISSING'}
-- Website: ${conversationState.website ? `✅ COLLECTED: "${conversationState.website}"` : '❌ MISSING'}
-- Name: ${conversationState.name ? `✅ COLLECTED: "${conversationState.name}"` : '❌ MISSING'}
-- Email: ${conversationState.email ? `✅ COLLECTED: "${conversationState.email}"` : '❌ MISSING'}
-- Phone: ${conversationState.phone ? `✅ COLLECTED: "${conversationState.phone}"` : '❌ MISSING'}
-- Keywords: ${conversationState.keywordsConfirmed ? `✅ CONFIRMED` : '❌ MISSING'}
-- Competitors Question Asked: ${conversationState.competitorQuestionAsked ? `✅ YES - DON'T ASK AGAIN` : '❌ NO'}
-- Customers Question Asked: ${conversationState.customerQuestionAsked ? `✅ YES - DON'T ASK AGAIN` : '❌ NO'}
+**🚨 MANDATORY CONVERSATION FLOW 🚨**
+${nextAction}
+${strictInstructions}
 
-**🚨 CRITICAL CONVERSATION FLOW RULES:**
-${getConversationGuidance(conversationState)}`;
+**🚨 CRITICAL RULES - NEVER VIOLATE:**
+- NEVER repeat the same question twice
+- NEVER skip steps in the flow
+- NEVER ask multiple questions at once
+- AFTER competitors response → IMMEDIATELY ask customers
+- AFTER customers response → IMMEDIATELY offer demo
+- FOLLOW THE EXACT SEQUENCE - NO EXCEPTIONS
+
+**CURRENT STATE:**
+- Language: ${conversationState.detectedLanguage === 'english' ? '🇺🇸 ENGLISH' : '🇹🇷 TURKISH'}
+- Product: ${conversationState.product ? `✅ "${conversationState.product}"` : '❌ MISSING'}
+- Country: ${conversationState.country ? `✅ "${conversationState.country}"` : '❌ MISSING'}
+- Keywords Confirmed: ${conversationState.keywordsConfirmed ? 'YES' : 'NO'}
+- Competitors Shown: ${conversationState.competitorsShown ? 'YES - DO NOT REPEAT' : 'NO'}
+- Customers Shown: ${conversationState.customersShown ? 'YES - DO NOT REPEAT' : 'NO'}`;
   }
   
   // If English is detected, modify the entire prompt to be English-focused
@@ -257,6 +330,13 @@ ${getConversationGuidance(conversationState)}`;
 You are ITAI Export Assistant. You are an expert in Turkish companies' exports, friendly and helpful consultant.
 
 **MANDATORY: ALL RESPONSES MUST BE IN ENGLISH LANGUAGE**
+
+**🚨 CRITICAL CONTENT RULES:**
+- NEVER include Wikipedia links or references in your responses
+- NEVER use parenthetical notes like "(Note: ...)" or "(extracted from...)"
+- NEVER include debugging information or metadata in responses
+- Keep responses clean and professional
+- Focus on natural conversation without technical annotations
 
 TASK: Have a natural conversation with the user to collect the following information IN ORDER:
 
@@ -423,12 +503,8 @@ CONVERSATION FLOW (collect information in this order):
 
 **🚨 PHASE DEBUGGING INFORMATION 🚨**
 Current Phase: ${conversationState?.currentPhase || 'UNKNOWN'}
-Competitors Section Started: ${conversationState?.competitorsSectionStarted || false}
-Competitors Completed: ${conversationState?.competitorsCompleted || false}
-Competitor Count: ${conversationState?.competitorCount || 0}
-Customers Section Started: ${conversationState?.customersSectionStarted || false}
-Customers Completed: ${conversationState?.customersCompleted || false}
-Customer Count: ${conversationState?.customerCount || 0}
+Competitors Shown: ${conversationState?.competitorsShown || false}
+Customers Shown: ${conversationState?.customersShown || false}
 Keywords Confirmed: ${conversationState?.keywordsConfirmed || false}
 
 **PHASE TRANSITION RULES:**
@@ -449,12 +525,8 @@ Today is ${dayName}, ${monthName} ${dayOfMonth}, ${year}.`;
 
 **🚨 PHASE DEBUGGING INFORMATION 🚨**
 Current Phase: ${conversationState?.currentPhase || 'UNKNOWN'}
-Competitors Section Started: ${conversationState?.competitorsSectionStarted || false}
-Competitors Completed: ${conversationState?.competitorsCompleted || false}
-Competitor Count: ${conversationState?.competitorCount || 0}
-Customers Section Started: ${conversationState?.customersSectionStarted || false}
-Customers Completed: ${conversationState?.customersCompleted || false}
-Customer Count: ${conversationState?.customerCount || 0}
+Competitors Shown: ${conversationState?.competitorsShown || false}
+Customers Shown: ${conversationState?.customersShown || false}
 Keywords Confirmed: ${conversationState?.keywordsConfirmed || false}
 
 **PHASE TRANSITION RULES:**
@@ -464,7 +536,31 @@ Keywords Confirmed: ${conversationState?.keywordsConfirmed || false}
 - Present 2 customers in ONE message → Ask "Bu müşterileri sizin için not alayım mı?"
 - After user responds (evet/hayır) → Go directly to demo phase`;
 
-  return `${DEVELOPER_PROMPT.trim()}${stateContext}${phaseDebuggingInfo}\n\nToday is ${dayName}, ${monthName} ${dayOfMonth}, ${year}.`;
+  // Add simple phase guidance
+  let phaseGuidance = "";
+  if (conversationState?.currentStep !== undefined) {
+    const steps = [
+      "Ask for product name",
+      "Ask for target country", 
+      "Ask for GTIP code",
+      "Ask for sales channels",
+      "Ask for website",
+      "Ask for name",
+      "Ask for email",
+      "Ask for phone",
+      "Show keywords and ask for confirmation",
+      "Show 2 competitors and ask to keep note",
+      "Show 2 customers and ask to keep note", 
+      "Offer demo and provide summary"
+    ];
+    
+    const currentStep = conversationState.currentStep;
+    const nextStep = Math.min(currentStep, steps.length - 1);
+    
+    phaseGuidance = `\n\n🎯 CURRENT STEP ${currentStep + 1}/12: ${steps[nextStep]}\n`;
+  }
+
+  return `${DEVELOPER_PROMPT.trim()}${stateContext}${phaseDebuggingInfo}${phaseGuidance}\n\nToday is ${dayName}, ${monthName} ${dayOfMonth}, ${year}.`;
 }
 
 function getConversationGuidance(state: any): string {
@@ -473,6 +569,12 @@ function getConversationGuidance(state: any): string {
     return "→ ASK FOR PRODUCT: Which product do you want to increase exports for?";
   }
   if (!state.country) {
+    // Special case: If user started with product name, acknowledge it and ask for country
+    if (state.userStartedWithProduct) {
+      return state.detectedLanguage === 'english' 
+        ? `→ ACKNOWLEDGE PRODUCT & ASK COUNTRY: "Great! I see you want to export ${state.product}. Which country do you want to sell this product to?"`
+        : `→ ACKNOWLEDGE PRODUCT & ASK COUNTRY: "Harika! ${state.product} ihracatı yapmak istiyorsunuz. Hangi ülkeye bu ürünü satmak istiyorsunuz?"`;
+    }
     return "→ ASK FOR COUNTRY: Which country do you want to sell this product to?";
   }
   if (!state.gtipCode) {
@@ -497,19 +599,21 @@ function getConversationGuidance(state: any): string {
     return "→ SHOW KEYWORDS: Generate 3 keywords and ask if they describe the product";
   }
   
-  // Handle competitors section
-  if (!state.competitorQuestionAsked) {
-    return "→ START COMPETITORS: Ask about first competitor: 'In [country], you have competitors like [CompanyName] (www.website.com), right? Should we consider another competitor?'";
+  // Handle competitors section - NEW FLOW: Present 2 at once
+  if (!state.competitorsShown) {
+    return `→ PRESENT 2 COMPETITORS: "In ${state.country}, you have competitors like [Company1] (www.website1.com) and [Company2] (www.website2.com). Should I keep a note of these competitors for you?"
+    🚨 MUST present EXACTLY 2 competitors in ONE message - NO Wikipedia links!`;
   }
   
-  if (state.competitorQuestionAsked && !state.customerQuestionAsked) {
-    return `🚨 COMPETITORS ALREADY ASKED! 
-→ MOVE TO CUSTOMERS: Say 'Noted! In ${state.country}, a potential customer might be [CustomerName] (www.website.com). Should we consider another customer?'
-→ DO NOT repeat competitor questions!`;
+  if (state.competitorsShown && !state.customersShown) {
+    return `🚨 COMPETITORS ALREADY SHOWN! 
+→ PRESENT 2 CUSTOMERS: "Noted! In ${state.country}, potential customers might be [Customer1] (www.website1.com) and [Customer2] (www.website2.com). Should I keep a note of these customers for you?"
+→ MUST present EXACTLY 2 customers in ONE message - NO Wikipedia links!
+→ 🚨 CRITICAL: DO NOT repeat competitor questions! User already responded to competitors!`;
   }
   
-  if (state.customerQuestionAsked) {
-    return `🚨 CUSTOMERS ALREADY ASKED!
+  if (state.customersShown) {
+    return `🚨 CUSTOMERS ALREADY SHOWN!
 → MOVE TO DEMO: Offer demo call and Calendly link
 → Provide comprehensive summary of all collected information
 → DO NOT repeat customer questions!`;
