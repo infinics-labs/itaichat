@@ -98,6 +98,7 @@ function detectCountryFromConversation(messages: any[]): string | null {
   return null;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function detectGtipFromConversation(messages: any[]): string | null {
   const userMessages = messages.filter(msg => msg.role === "user" && msg.content);
   
@@ -138,6 +139,7 @@ function detectGtipFromConversation(messages: any[]): string | null {
   return null;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function detectInfoFromConversation(messages: any[], questionType: string, patterns: any[] | null): string | null {
   const userMessages = messages.filter(msg => msg.role === "user" && msg.content);
   const allUserText = userMessages.map(msg => msg.content).join(" ").toLowerCase();
@@ -189,6 +191,7 @@ function getExpectedMessagePosition(questionType: string): number {
   return positions[questionType] || 5; // Default position
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function detectKeywordsFromConversation(messages: any[]): string | null {
   const userMessages = messages.filter(msg => msg.role === "user" && msg.content);
   
@@ -803,6 +806,7 @@ async function getConversationState(messages: any[]) {
   const userMessages = messages.filter(msg => msg.role === "user" && msg.content);
   const assistantMessages = messages.filter(msg => msg.role === "assistant" && msg.content);
   const allUserText = userMessages.map(msg => msg.content).join(" ").toLowerCase();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const allAssistantText = assistantMessages.map(msg => 
     typeof msg.content === 'string' ? msg.content : ''
   ).join(" ").toLowerCase();
@@ -836,7 +840,7 @@ async function getConversationState(messages: any[]) {
           console.log(`📦 PRODUCT COLLECTED: "${analysis.productName}"`);
           break;
         }
-      } catch (error) {
+      } catch {
         // Ignore errors
       }
     }
@@ -913,7 +917,7 @@ async function getConversationState(messages: any[]) {
       const analysis = await analyzeUserMessage(firstMessage);
       state.detectedLanguage = analysis.language;
       console.log(`🌐 LANGUAGE DETECTED: ${analysis.language}`);
-    } catch (error) {
+    } catch {
       console.log(`⚠️  AI ANALYSIS FAILED, USING FALLBACK`);
       state.detectedLanguage = /[çğıöşüÇĞIİÖŞÜ]/.test(allUserText) ? 'turkish' : 'english';
       console.log(`🌐 FALLBACK LANGUAGE DETECTED: ${state.detectedLanguage}`);
@@ -968,6 +972,7 @@ export async function POST(request: Request) {
     
     // Efficient phase debugging
     const phaseEmojis = ["🏁", "📦", "🌍", "🔢", "🛒", "🌐", "👤", "📧", "📱", "🔑", "🏢", "👥", "📅"];
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const phaseNames = ["INITIAL", "PRODUCT", "COUNTRY", "GTIP", "SALES_CHANNELS", "WEBSITE", "NAME", "EMAIL", "PHONE", "KEYWORDS", "COMPETITORS", "CUSTOMERS", "DEMO"];
     
     const currentStep = conversationState.currentStep || 0;
