@@ -416,6 +416,7 @@ export const translations: Record<Language, Translations> = {
         },
         additionalInfo: "All plans include our standard features with varying levels of support and customization.",
         customSolution: "Need a custom solution?",
+        proPlusRestriction: "Only available above 10 countries",
       },
       finalCta: {
         title: "Ready to find your next international buyers?",
@@ -1120,6 +1121,7 @@ export const translations: Record<Language, Translations> = {
         },
         additionalInfo: "Tüm planlar, değişen destek ve özelleştirme seviyeleri ile standart özelliklerimizi içerir.",
         customSolution: "Özel bir çözüme mi ihtiyacınız var?",
+        proPlusRestriction: "Sadece 10 ülke üzerinde kullanılabilir",
       },
       finalCta: {
         title: "Bir sonraki uluslararası alıcılarınızı bulmaya hazır mısınız?",

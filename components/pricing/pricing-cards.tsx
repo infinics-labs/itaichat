@@ -27,6 +27,7 @@ export function PricingCards() {
   const [selectedCountries, setSelectedCountries] = useState(1)
   
   const currentPricing = pricingData.find(p => p.countries === selectedCountries) || pricingData[0]
+  const isProPlusDisabled = selectedCountries < 10
 
   const plans = [
     {
@@ -71,7 +72,8 @@ export function PricingCards() {
         t("pricing.cards.plans.proPlus.features.health")
       ],
       description: t("pricing.cards.plans.proPlus.description"),
-      color: "from-purple-500 to-purple-600"
+      color: "from-purple-500 to-purple-600",
+      disabled: isProPlusDisabled
     }
   ]
 
@@ -104,8 +106,10 @@ export function PricingCards() {
         {plans.map((plan, index) => (
           <Card 
             key={index} 
-            className={`border-0 shadow-xl hover:shadow-2xl transition-all duration-300 relative ${
+            className={`border-0 shadow-xl transition-all duration-300 relative ${
               plan.popular ? 'ring-2 ring-orange-500 scale-105' : ''
+            } ${
+              plan.disabled ? 'opacity-50 bg-gray-50' : 'hover:shadow-2xl'
             }`}
           >
             {plan.popular && (
@@ -131,12 +135,22 @@ export function PricingCards() {
 
               {/* Price */}
               <div className="mb-8">
-                <div className="text-4xl font-bold text-gray-900 mb-2">
-                  ${plan.price.toLocaleString()}
-                </div>
-                <div className="text-gray-500 text-sm">
-                  {t("pricing.cards.forCountries")} {selectedCountries} {selectedCountries === 1 ? t("pricing.cards.country").toLowerCase() : t("pricing.cards.countries").toLowerCase()}
-                </div>
+                {plan.disabled ? (
+                  <div className="text-center py-4">
+                    <div className="text-red-500 text-lg font-medium">
+                      {t("pricing.cards.proPlusRestriction")}
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="text-4xl font-bold text-gray-900 mb-2">
+                      ${plan.price.toLocaleString()}
+                    </div>
+                    <div className="text-gray-500 text-sm">
+                      {t("pricing.cards.forCountries")} {selectedCountries} {selectedCountries === 1 ? t("pricing.cards.country").toLowerCase() : t("pricing.cards.countries").toLowerCase()}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Features */}
@@ -150,26 +164,36 @@ export function PricingCards() {
               </ul>
 
               {/* CTA Button */}
-              <Link 
-                href="/demo"
-                onClick={() => trackCTAClick({
-                  page: 'pricing',
-                  placement: `${plan.name.toLowerCase().replace(/\s+/g, '_')}_card`,
-                  button_text: `Get Started - ${plan.name}`,
-                  destination: '/demo'
-                })}
-              >
+              {plan.disabled ? (
                 <Button
-                  className={`w-full py-3 font-semibold transition-all duration-300 ${
-                    plan.popular 
-                      ? 'bg-gradient-to-r from-orange-500 to-blue-900 hover:from-orange-600 hover:to-blue-800 text-white shadow-lg hover:shadow-xl'
-                      : 'bg-gray-900 hover:bg-gray-800 text-white'
-                  }`}
+                  disabled
+                  className="w-full py-3 font-semibold bg-gray-300 text-gray-500 cursor-not-allowed"
                 >
                   {t("pricing.cards.getStarted")}
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
-              </Link>
+              ) : (
+                <Link 
+                  href="/demo"
+                  onClick={() => trackCTAClick({
+                    page: 'pricing',
+                    placement: `${plan.name.toLowerCase().replace(/\s+/g, '_')}_card`,
+                    button_text: `Get Started - ${plan.name}`,
+                    destination: '/demo'
+                  })}
+                >
+                  <Button
+                    className={`w-full py-3 font-semibold transition-all duration-300 ${
+                      plan.popular 
+                        ? 'bg-gradient-to-r from-orange-500 to-blue-900 hover:from-orange-600 hover:to-blue-800 text-white shadow-lg hover:shadow-xl'
+                        : 'bg-gray-900 hover:bg-gray-800 text-white'
+                    }`}
+                  >
+                    {t("pricing.cards.getStarted")}
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </Link>
+              )}
             </CardContent>
           </Card>
         ))}
