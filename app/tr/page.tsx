@@ -14,7 +14,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { X, MessageCircle } from "lucide-react"
 import { useRouter } from "next/navigation"
 
-export default function HomePage() {
+export default function TurkishHomePage() {
   const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false)
   const router = useRouter()
 
@@ -66,7 +66,7 @@ export default function HomePage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">
-                      Welcome to ITAI! 👋
+                      ITAI&apos;ye Hoş Geldiniz! 👋
                     </h3>
                   </div>
                 </div>
@@ -79,27 +79,27 @@ export default function HomePage() {
               </div>
               <div className="mb-3">
                 <p className="text-sm text-gray-700 mb-2">
-                  Your AI Export Assistant is here to help with market insights and buyer connections.
+                  AI İhracat Asistanınız pazar içgörüleri ve alıcı bağlantıları konusunda yardımcı olmak için burada.
                 </p>
                 <p className="text-xs text-gray-600">
-                  Try: &quot;Find buyers in Germany&quot; or &quot;Export requirements for Turkey&quot;
+                  Deneyin: &quot;Almanya&apos;da alıcı bul&quot; veya &quot;Türkiye ihracat gereksinimleri&quot;
                 </p>
               </div>
               <div className="space-y-2">
                 <button
                   onClick={() => {
                     setIsWelcomeModalOpen(false)
-                    router.push('/chat')
+                    router.push('/tr/sohbet')
                   }}
                   className="w-full bg-gradient-to-r from-orange-500 to-blue-900 hover:from-orange-600 hover:to-blue-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300"
                 >
-                  Start Chatting
+                  Sohbete Başla
                 </button>
                 <button
                   onClick={() => setIsWelcomeModalOpen(false)}
                   className="w-full text-gray-500 hover:text-gray-700 text-xs py-1 transition-colors"
                 >
-                  Maybe later
+                  Belki sonra
                 </button>
               </div>
             </CardContent>

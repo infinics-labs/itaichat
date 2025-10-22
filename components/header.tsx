@@ -8,7 +8,30 @@ import { useLanguage } from "@/contexts/language-context"
 import { LanguageSwitcher } from "@/components/language-switcher"
 
 export function Header() {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
+
+  // Helper function to get localized URLs
+  const getLocalizedUrl = (path: string) => {
+    if (language === 'tr') {
+      const turkishUrls: { [key: string]: string } = {
+        '/': '/tr',
+        '/why-different': '/tr/neden-farkli',
+        '/how-it-works': '/tr/nasil-calisir',
+        '/about': '/tr/hakkimizda',
+        '/pricing': '/tr/fiyatlandirma',
+        '/use-cases': '/tr/kullanim-alanlari',
+        '/faq': '/tr/sss',
+        '/contact': '/tr/iletisim',
+        '/chat': '/tr/sohbet',
+        '/verified-leads': '/tr/dogrulanmis-musteriler',
+        '/advantages': '/tr/avantajlar',
+        '/b2b-data': '/tr/b2b-veri',
+        '/demo': '/tr/demo'
+      }
+      return turkishUrls[path] || `/tr${path}`
+    }
+    return path
+  }
 
   return (
     <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
@@ -16,7 +39,7 @@ export function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center">
+            <Link href={getLocalizedUrl("/")} className="flex items-center">
               <div className="relative flex items-center">
                 <Image 
                   src="/logo.png" 
@@ -46,22 +69,22 @@ export function Header() {
 
           {/* Navigation */}
           <nav className="hidden lg:flex items-center space-x-4 xl:space-x-6">
-            <a href="/why-different" className="text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors whitespace-nowrap">
+            <a href={getLocalizedUrl("/why-different")} className="text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors whitespace-nowrap">
               {t("header.nav.whyDifferent")}
             </a>
-            <a href="/how-it-works" className="text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors whitespace-nowrap">
-              HOW IT WORKS
+            <a href={getLocalizedUrl("/how-it-works")} className="text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors whitespace-nowrap">
+              {language === 'tr' ? 'NASIL ÇALIŞIR' : 'HOW IT WORKS'}
             </a>
-            <a href="/about" className="text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors whitespace-nowrap">
+            <a href={getLocalizedUrl("/about")} className="text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors whitespace-nowrap">
               {t("header.nav.about")}
             </a>
-            <a href="/pricing" className="text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors whitespace-nowrap">
+            <a href={getLocalizedUrl("/pricing")} className="text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors whitespace-nowrap">
               {t("header.nav.pricing")}
             </a>
-            <a href="/use-cases" className="text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors whitespace-nowrap">
+            <a href={getLocalizedUrl("/use-cases")} className="text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors whitespace-nowrap">
               {t("header.nav.useCases")}
             </a>
-            <a href="/faq" className="text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors whitespace-nowrap">
+            <a href={getLocalizedUrl("/faq")} className="text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors whitespace-nowrap">
               {t("header.nav.faq")}
             </a>
           </nav>
@@ -69,7 +92,7 @@ export function Header() {
           {/* Right side - Language Switcher and CTA Buttons */}
           <div className="flex items-center space-x-2 lg:space-x-3">
             <LanguageSwitcher />
-            <Link href="/chat">
+            <Link href={getLocalizedUrl("/chat")}>
               <Button size="sm" className="bg-gradient-to-r from-orange-500 to-blue-900 hover:from-orange-600 hover:to-blue-800 text-white shadow-lg text-xs lg:text-sm px-3 lg:px-4 py-2 whitespace-nowrap">
                 {t("header.buttons.getStarted")}
               </Button>

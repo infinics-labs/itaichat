@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Play, MessageCircle, X } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { trackCTAClick, trackButtonClick, trackVideoPlay } from "@/lib/analytics"
 import { AIChatInterface } from "@/components/ai-chat-interface"
 import { TrustStrip } from "@/components/trust-strip"
@@ -151,9 +152,17 @@ export function HeroSection() {
                 className="relative bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl overflow-hidden shadow-2xl cursor-pointer group"
                 onClick={handleVideoPlay}
               >
-                <div className="aspect-video flex items-center justify-center">
-                  <div className="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center group-hover:bg-white transition-all duration-300 group-hover:scale-110">
-                    <Play className="w-8 h-8 text-orange-500 ml-1" />
+                <div className="aspect-video relative">
+                  <Image 
+                    src="/thumbnail.png" 
+                    alt="ITAI Demo Video Thumbnail"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center group-hover:bg-white transition-all duration-300 group-hover:scale-110">
+                      <Play className="w-8 h-8 text-orange-500 ml-1" />
+                    </div>
                   </div>
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />

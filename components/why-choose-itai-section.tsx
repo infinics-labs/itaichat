@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { CheckCircle, TrendingUp, Clock, Target } from "lucide-react"
 import { trackCTAClick } from "@/lib/analytics"
 import { useLanguage } from "@/contexts/language-context"
+import Image from "next/image"
 
 export function WhyChooseITAISection() {
   const { t } = useLanguage()
@@ -93,63 +94,13 @@ export function WhyChooseITAISection() {
           <div className="flex justify-center items-center">
             <Card className="border-0 shadow-2xl overflow-hidden max-w-md w-full">
               <CardContent className="p-0">
-                <div className="bg-gradient-to-br from-blue-50 to-orange-50 aspect-[4/3] flex items-center justify-center relative">
-                  {/* Large Product Screenshot Placeholder */}
-                  <div className="absolute inset-4 bg-white rounded-lg shadow-lg border-2 border-gray-200 flex flex-col">
-                    {/* Mock Browser Header */}
-                    <div className="bg-gray-100 px-4 py-2 border-b border-gray-200 flex items-center space-x-2">
-                      <div className="flex space-x-1">
-                        <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-                        <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                        <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                      </div>
-                      <div className="flex-1 bg-white rounded px-2 py-1 text-xs text-gray-500">
-                        itai.export-assistant.com
-                      </div>
-                    </div>
-                    
-                    {/* Mock Dashboard Content */}
-                    <div className="flex-1 p-4 space-y-3">
-                      <div className="flex items-center space-x-2 mb-3">
-                        <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-blue-900 rounded-lg flex items-center justify-center">
-                          <Target className="w-4 h-4 text-white" />
-                        </div>
-                        <div className="text-sm font-semibold text-gray-900">Verified Buyers Dashboard</div>
-                      </div>
-                      
-                      {/* Mock Data Rows */}
-                      <div className="space-y-2">
-                        <div className="bg-gray-50 rounded p-2">
-                          <div className="flex justify-between items-center">
-                            <div className="text-xs font-medium text-gray-700">ABC Trading GmbH</div>
-                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                          </div>
-                          <div className="text-xs text-gray-500">Germany • Verified Contact</div>
-                        </div>
-                        <div className="bg-gray-50 rounded p-2">
-                          <div className="flex justify-between items-center">
-                            <div className="text-xs font-medium text-gray-700">Import Solutions Ltd</div>
-                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                          </div>
-                          <div className="text-xs text-gray-500">UK • Decision Maker</div>
-                        </div>
-                        <div className="bg-gray-50 rounded p-2">
-                          <div className="flex justify-between items-center">
-                            <div className="text-xs font-medium text-gray-700">Euro Distributors SA</div>
-                            <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                          </div>
-                          <div className="text-xs text-gray-500">France • High Potential</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Enhanced Placeholder Label */}
-                <div className="bg-white p-3 border-t">
-                  <p className="text-xs text-gray-500 text-center font-medium">
-                    🎯 Live Product Screenshot - Verified International Buyer Database
-                  </p>
+                <div className="aspect-[4/3] relative">
+                  <Image 
+                    src="/whychoose.png" 
+                    alt="🎯 Live Product Screenshot - Verified International Buyer Database - ITAI Export Assistant Platform showing verified buyers dashboard with ABC Trading GmbH Germany, Import Solutions Ltd UK, and Euro Distributors SA France"
+                    fill
+                    className="object-cover"
+                  />
                 </div>
               </CardContent>
             </Card>
