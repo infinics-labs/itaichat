@@ -105,7 +105,7 @@ export const translations: Record<Language, Translations> = {
         },
         links: {
           about: "About",
-          careers: "Careers",
+          blog: "Blog",
           contact: "Contact",
           howItWorks: "How It Works",
           useCases: "Use Cases",
@@ -574,6 +574,7 @@ export const translations: Record<Language, Translations> = {
         },
       },
       faq: {
+        title: "Frequently Asked Questions",
         whatHappensNext: {
           question: "What happens next?",
           answer: "We'll review your information and send you a calendar link to schedule your personalized demo.",
@@ -722,7 +723,7 @@ export const translations: Record<Language, Translations> = {
       },
       buttons: {
         signIn: "Giriş Yap",
-        getStarted: "Canlı demo rezervasyonu",
+        getStarted: "Demo Talep Edin",
       },
     },
     // Homepage
@@ -732,8 +733,8 @@ export const translations: Record<Language, Translations> = {
         titleAccent: "dakikalar içinde bulun",
         subtitle1: "Ekibiniz üründen alıcıya daha hızlı bir yol hak ediyor.",
         subtitle2: "AI'mız küresel pazarları haritalar, en uygun şirketleri bulur ve karar verici verileriyle doğrulanmış müşteri adayları sunar.",
-        subtitle3: "Bu ay kaç gerçek konuşma yaratabileceğinizi görmek için canlı demo rezervasyonu yapın.",
-        cta1: "Canlı demo rezervasyonu",
+        subtitle3: "Bu ay kaç gerçek konuşma yaratabileceğinizi görmek için demo talep edin yapın.",
+        cta1: "Demo Talep Edin",
         cta2: "ITAI chatbot ile ihracat içgörüleri alın",
         videoTitle: "ITAI'yi Aksiyonda Görün",
         videoDuration: "2:30 dk demo",
@@ -751,7 +752,7 @@ export const translations: Record<Language, Translations> = {
           reachability: "Erişilebilirlik kontrolleri ve satın alma bağlamı",
           talkingPoints: "Kişiselleştirilmiş iletişim için önceden yazılmış konuşma noktaları",
         },
-        cta: "Canlı demo rezervasyonu",
+        cta: "Demo Talep Edin",
         highlightTitle: "Neden kalite miktardan üstün",
         comparison: {
           platform: "Müşteri Adayı Platformu",
@@ -791,7 +792,7 @@ export const translations: Record<Language, Translations> = {
           predictablePipeline: "Öngörülebilir ihracat hattı",
           predictablePipelineDesc: "Kaliteli B2B iş müşteri adayları ile aydan aya birikir",
         },
-        cta: "Canlı demo rezervasyonu",
+        cta: "Demo Talep Edin",
       },
       footer: {
         cta: {
@@ -799,7 +800,7 @@ export const translations: Record<Language, Translations> = {
           title: "AI asistanımızla ihracat yolculuğunuza bugün başlayın",
           titleAccent: "AI asistanı",
           description: "Küresel fırsatları keşfetmek ve uluslararası alıcılarla bağlantı kurmak için ITAI'ye güvenen binlerce başarılı ihracatçıya katılın.",
-          button: "Canlı demo rezervasyonu",
+          button: "Demo Talep Edin",
           disclaimer: "Kredi kartı gerekmez • Saniyeler içinde sohbet etmeye başlayın",
         },
         description: "Görevleri daha verimli bir şekilde gerçekleştirmenize yardımcı olmak için son teknoloji ile desteklenen gelişmiş AI asistanı.",
@@ -810,7 +811,7 @@ export const translations: Record<Language, Translations> = {
         },
         links: {
           about: "Hakkımızda",
-          careers: "Kariyer",
+          blog: "Blog",
           contact: "İletişim",
           howItWorks: "Nasıl Çalışır",
           useCases: "Kullanım Alanları",
@@ -841,7 +842,7 @@ export const translations: Record<Language, Translations> = {
             description: "Şirket profilleri, iletişim bilgileri, içgörülerle önceliklendirilmiş müşteri adayları.",
           },
         },
-        cta: "Canlı demo rezervasyonu",
+        cta: "Demo Talep Edin",
       },
       provenResults: {
         title: "Kendini Kanıtlamış Sonuçlar",
@@ -856,7 +857,7 @@ export const translations: Record<Language, Translations> = {
           exportValue: "İhracat Değeri",
           exportValueDesc: "Müşteriler için üretilen",
         },
-        cta: "Canlı demo rezervasyonu",
+        cta: "Demo Talep Edin",
       },
       homeFaq: {
         title: "Sıkça Sorulan",
@@ -864,7 +865,7 @@ export const translations: Record<Language, Translations> = {
         subtitle: "Doğrulanmış uluslararası alıcıları bulma ve ihracat büyümenizi hızlandırma hakkında yaygın soruların yanıtlarını alın.",
         questions: {
           q1: "B2B müşteri adayı bulma nedir ve burada neden önemlidir?",
-          a1: "B2B müşteri adayı bulma, ICP'nize uyan şirketleri ve kişileri bulma ve nitelendirme işidir, böylece iletişim verimli hale gelir—aksiyonda görmek için canlı demo rezervasyonu yapın.",
+          a1: "B2B müşteri adayı bulma, ICP'nize uyan şirketleri ve kişileri bulma ve nitelendirme işidir, böylece iletişim verimli hale gelir—aksiyonda görmek için demo talep edin yapın.",
           q2: "Verileriniz nereden geliyor ve kişileri nasıl doğruluyorsunuz?",
           a2: "Güvenilir kaynaklardan zenginleştiriyoruz, e-posta teslim edilebilirliğini doğruluyoruz, rol uygunluğunu kontrol ediyoruz ve erişilemeyen kişileri hızlıca değiştiriyoruz.",
           q3: "Ülke veya sektöre göre B2B şirket aramasını destekliyor musunuz?",
@@ -872,12 +873,12 @@ export const translations: Record<Language, Translations> = {
           q4: "Karar vermeden önce örnekleri görebilir miyim?",
           a4: "Evet-canlı demoda örnek alıcıları görün; küratörlü bir önizlemeyi birlikte inceleriz.",
         },
-        cta: "Canlı demo rezervasyonu",
+        cta: "Demo Talep Edin",
       },
       finalCta: {
         title: "İhracat hattınızı dönüştürmeye hazır mısınız?",
         subtitle: "Doğrulanmış alıcıları bulmak ve karar vericilerle bağlantı kurmak için ITAI'yi kullanan ihracatçılara katılın.",
-        cta: "Canlı demo rezervasyonu",
+        cta: "Demo Talep Edin",
       },
     },
     // Why Different Page
@@ -977,7 +978,7 @@ export const translations: Record<Language, Translations> = {
         verified: "Karar verici iletişim bilgileri olan doğrulanmış uluslararası alıcılar",
         global: "İhracata odaklı üreticiler için küresel pazar kapsamı",
       },
-      cta: "Canlı demo rezervasyonu",
+      cta: "Demo Talep Edin",
       card: {
         title: "İhracata Odaklı Üreticiler İçin Geliştirildi",
         description: "Ürünleri doğrulanmış uluslararası alıcılar ve güvenilir verilerle eşleştirerek üreticilerin ihracatlarını büyütmelerine yardımcı oluyoruz.",
@@ -1143,7 +1144,7 @@ export const translations: Record<Language, Translations> = {
         title: "Küresel satış yapan",
         titleAccent: "üreticiler için geliştirildi",
         subtitle: "Farklı türdeki üretim şirketlerinin doğrulanmış uluslararası alıcıları bulmak ve daha nitelikli toplantılar ayarlamak için ITAI'yi nasıl kullandığını görün.",
-        bookDemo: "Canlı demo rezervasyonu",
+        bookDemo: "Demo Talep Edin",
         requestPricing: "Canlı demo ile fiyat talebi",
       },
       types: {
@@ -1201,7 +1202,7 @@ export const translations: Record<Language, Translations> = {
       finalCta: {
         title: "Sektörünüz için doğrulanmış alıcıları görmeye hazır mısınız?",
         description: "Yüksek kaliteli doğrulanmış alıcılara erişim elde edin ve platformumuzun sizin gibi üretim şirketlerinin daha nitelikli toplantılar ayarlamasına nasıl yardımcı olabileceğini görün.",
-        bookDemo: "Canlı demo rezervasyonu",
+        bookDemo: "Demo Talep Edin",
         requestPricing: "Canlı demo ile fiyat talebi",
       },
       links: {
@@ -1223,15 +1224,15 @@ export const translations: Record<Language, Translations> = {
       questions: {
         whatIsB2bProspecting: {
           question: "B2B müşteri adayı bulma nedir?",
-          answer: "B2B müşteri adayı bulma, ICP'nize uyan şirketleri ve iletişim bilgilerini bulup nitelendirme işidir böylece iletişim verimli hale gelir - canlı demo rezervasyonu yaparak aksiyonda görün.",
+          answer: "B2B müşteri adayı bulma, ICP'nize uyan şirketleri ve iletişim bilgilerini bulup nitelendirme işidir böylece iletişim verimli hale gelir - demo talep edin yaparak aksiyonda görün.",
         },
         leadScraperDifference: {
           question: "Müşteri adayı kazıyıcısı yaklaşımınızdan nasıl farklı?",
-          answer: "Müşteri adayı kazıyıcısı büyük ölçekte doğrulanmamış veri çekerken biz rol uyumu ve teslim edilebilirlik kontrolleri olan doğrulanmış müşteri adayları sunuyoruz - önizleme için canlı demo rezervasyonu yapın.",
+          answer: "Müşteri adayı kazıyıcısı büyük ölçekte doğrulanmamış veri çekerken biz rol uyumu ve teslim edilebilirlik kontrolleri olan doğrulanmış müşteri adayları sunuyoruz - önizleme için demo talep edin yapın.",
         },
         b2bProspectingTool: {
           question: "B2B müşteri adayı bulma aracı veya yazılımı sunuyor musunuz?",
-          answer: "İş akışınıza entegre olan ve popüler araçlarla bütünleşen temiz segmentler sunuyoruz - örnek segmentleri görmek için canlı demo rezervasyonu yapın.",
+          answer: "İş akışınıza entegre olan ve popüler araçlarla bütünleşen temiz segmentler sunuyoruz - örnek segmentleri görmek için demo talep edin yapın.",
         },
         freeB2bLeadsDatabase: {
           question: "Ücretsiz B2B müşteri adayları veritabanı alabilir miyim?",
@@ -1245,13 +1246,13 @@ export const translations: Record<Language, Translations> = {
       cta: {
         title: "Hala sorularınız mı var?",
         description: "Aradığınız yanıtı bulamıyor musunuz? Uzman ekibimiz ITAI'nin ihracat işinizi nasıl dönüştürebileceğini anlamanızda size yardımcı olmak için burada.",
-        button: "Canlı demo rezervasyonu",
+        button: "Demo Talep Edin",
       },
     },
     // Contact Page
     contact: {
       hero: {
-        title: "Canlı demo rezervasyonu",
+        title: "Demo Talep Edin",
         subtitle: "Ürününüz, hedef ülkeleriniz ve alıcı profiliniz hakkında bize bilgi verin. Demo sırasında doğrulanmış iletişim bilgileri ve B2B iletişim verilerinin özenle seçilmiş önizlemesini göstereceğiz.",
       },
       form: {
@@ -1270,7 +1271,7 @@ export const translations: Record<Language, Translations> = {
           notes: "Notlar",
           notesPlaceholder: "İhracat hedefleriniz, hedef alıcı profiliniz veya özel gereksinimleriniz hakkında daha fazla bilgi verin...",
         },
-        button: "Canlı demo rezervasyonu",
+        button: "Demo Talep Edin",
         submitting: "Gönderiliyor...",
         success: {
           title: "İlginiz için teşekkür ederiz!",
@@ -1279,6 +1280,7 @@ export const translations: Record<Language, Translations> = {
         },
       },
       faq: {
+        title: "Sıkça Sorulan Sorular",
         whatHappensNext: {
           question: "Sonra ne olacak?",
           answer: "Bilgilerinizi inceleyeceğiz ve kişiselleştirilmiş demonuzu planlamak için size takvim bağlantısı göndereceğiz.",
@@ -1332,23 +1334,23 @@ export const translations: Record<Language, Translations> = {
         title: "Sıkça Sorulan Sorular",
         howProcess: {
           question: "B2B müşteri adayı bulma süreci nasıl çalışır?",
-          answer: "B2B müşteri adayı bulma yazılımımız ideal alıcı profilinizle başlar ve hemen iletişime geçebileceğiniz doğrulanmış müşteri adaylarıyla biter. Tüm araştırma ve doğrulama sürecini biz yürütüyoruz—aksiyonda görmek için canlı demo rezervasyonu yapın.",
+          answer: "B2B müşteri adayı bulma yazılımımız ideal alıcı profilinizle başlar ve hemen iletişime geçebileceğiniz doğrulanmış müşteri adaylarıyla biter. Tüm araştırma ve doğrulama sürecini biz yürütüyoruz—aksiyonda görmek için demo talep edin yapın.",
         },
         whatMakesDifferent: {
           question: "Bunu diğer müşteri adayı bulma platformlarından farklı kılan nedir?",
-          answer: "Genel müşteri adayı bulma platformlarının aksine, doğrulanmış uluslararası alıcılar ve karar verici iletişim bilgileri ile özellikle B2B ihracat pazarlarına odaklanıyoruz—önizleme için canlı demo rezervasyonu yapın.",
+          answer: "Genel müşteri adayı bulma platformlarının aksine, doğrulanmış uluslararası alıcılar ve karar verici iletişim bilgileri ile özellikle B2B ihracat pazarlarına odaklanıyoruz—önizleme için demo talep edin yapın.",
         },
         howQuickly: {
           question: "Doğrulanmış müşteri adaylarını ne kadar hızlı alabilirim?",
-          answer: "Çoğu müşteri, ideal alıcı profillerini tanımladıktan sonra 48-72 saat içinde ilk doğrulanmış müşteri adayı grubunu alır—örnek segmentleri görmek için canlı demo rezervasyonu yapın.",
+          answer: "Çoğu müşteri, ideal alıcı profillerini tanımladıktan sonra 48-72 saat içinde ilk doğrulanmış müşteri adayı grubunu alır—örnek segmentleri görmek için demo talep edin yapın.",
         },
         leadScraperDifference: {
           question: "Müşteri adayı kazıyıcısı yaklaşımınızdan nasıl farklı?",
-          answer: "Müşteri adayı kazıyıcısı büyük ölçekte doğrulanmamış veri çekerken biz rol uyumu ve teslim edilebilirlik kontrolleri olan doğrulanmış müşteri adayları sunuyoruz—önizleme için canlı demo rezervasyonu yapın.",
+          answer: "Müşteri adayı kazıyıcısı büyük ölçekte doğrulanmamış veri çekerken biz rol uyumu ve teslim edilebilirlik kontrolleri olan doğrulanmış müşteri adayları sunuyoruz—önizleme için demo talep edin yapın.",
         },
         prospectingTool: {
           question: "B2B müşteri adayı bulma aracı veya yazılımı sunuyor musunuz?",
-          answer: "İş akışınıza entegre olan ve popüler araçlarla bütünleşen temiz segmentler sunuyoruz—örnek segmentleri görmek için canlı demo rezervasyonu yapın.",
+          answer: "İş akışınıza entegre olan ve popüler araçlarla bütünleşen temiz segmentler sunuyoruz—örnek segmentleri görmek için demo talep edin yapın.",
         },
         freeDatabase: {
           question: "Ücretsiz B2B müşteri adayları veritabanı alabilir miyim?",
@@ -1362,7 +1364,7 @@ export const translations: Record<Language, Translations> = {
       cta: {
         title: "B2B müşteri adayı bulmanızı dönüştürmeye hazır mısınız?",
         subtitle: "B2B müşteri adayı bulma yazılımımızın doğrulanmış müşteri adayları bulmanıza ve daha nitelikli toplantılar ayarlamanıza nasıl yardımcı olabileceğini görün.",
-        button: "Canlı demo rezervasyonu",
+        button: "Demo Talep Edin",
         secondaryButton: "Canlı demo ile fiyat talebi",
       },
     },

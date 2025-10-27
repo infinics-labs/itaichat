@@ -6,6 +6,9 @@ import type { Metadata } from "next"
 export const metadata: Metadata = {
   title: "Kullanım Alanları | Üretim, Elektronik, İlaç, Tıbbi Cihazlar",
   description: "Üreticilerin uluslararası alıcıları bulmak ve doğrulamak ve nitelikli toplantılar ayarlamak için ITAI'yi nasıl kullandığını görün.",
+  alternates: {
+    canonical: 'https://www.internationaltradeai.com/tr/kullanim-alanlari'
+  },
 }
 
 export default function TurkishUseCasesPage() {

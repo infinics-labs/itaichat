@@ -108,14 +108,12 @@ export function HeroSection() {
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <a 
-                  href="https://calendly.com/mehmet-odsdanismanlik/30min"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/chat"
                   onClick={() => trackCTAClick({
                     page: 'home',
                     placement: 'hero_primary',
                     button_text: 'Book a live demo',
-                    destination: 'https://calendly.com/mehmet-odsdanismanlik/30min'
+                    destination: '/chat'
                   })}
                 >
                   <Button

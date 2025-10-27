@@ -62,12 +62,12 @@ export function WhyDifferentSection() {
             {/* CTA Button */}
             <div className="pt-6">
               <Link 
-                href="/demo"
+                href="/chat"
                 onClick={() => trackCTAClick({
                   page: 'home',
                   placement: 'different_section',
                   button_text: 'Book a live demo',
-                  destination: '/demo'
+                  destination: '/chat'
                 })}
               >
                 <Button

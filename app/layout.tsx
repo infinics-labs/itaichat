@@ -13,7 +13,11 @@ export const metadata: Metadata = {
     icon: "/logo.png",
   },
   alternates: {
-    canonical: '/'
+    canonical: 'https://www.internationaltradeai.com/'
+  },
+  verification: {
+    google: 'your-google-verification-code-here',
+    // Add other verification codes as needed
   },
   openGraph: {
     title: "Find Verified International Buyers | ITAI Export Assistant",
@@ -45,8 +49,8 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Organization",
               "name": "ITAI - International Trade AI",
-              "url": "https://www.itai.com",
-              "logo": "https://www.itai.com/logo.png",
+              "url": "https://www.internationaltradeai.com",
+              "logo": "https://www.internationaltradeai.com/logo.png",
               "description": "ITAI finds verified international buyers and decision‑maker contacts so manufacturers book meetings and win export deals faster.",
               "sameAs": [
                 "https://www.instagram.com/internationaltradeai",
@@ -65,7 +69,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "WebSite",
               "name": "ITAI Export Assistant",
-              "url": "https://www.itai.com",
+              "url": "https://www.internationaltradeai.com",
               "description": "Find verified international buyers and decision‑maker contacts to win export deals faster."
             })
           }}
@@ -82,7 +86,36 @@ export default function RootLayout({
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-75NPC5F8WZ');
+            gtag('config', 'G-75NPC5F8WZ', {
+              page_location: window.location.href,
+              page_title: document.title,
+              site_speed_sample_rate: 100,
+              custom_map: {
+                'custom_parameter_1': 'page_type',
+                'custom_parameter_2': 'user_language'
+              },
+              // Enhanced ecommerce and conversion tracking
+              send_page_view: true,
+              // Cookie settings for GDPR compliance
+              cookie_domain: 'internationaltradeai.com',
+              cookie_expires: 63072000, // 2 years
+              // Enhanced measurement
+              enhanced_measurement: {
+                scrolls: true,
+                outbound_clicks: true,
+                site_search: true,
+                video_engagement: true,
+                file_downloads: true
+              }
+            });
+            
+            // Track initial page view with custom parameters
+            gtag('event', 'page_view', {
+              page_title: document.title,
+              page_location: window.location.href,
+              page_type: 'website',
+              user_language: navigator.language || 'en'
+            });
           `}
         </Script>
         

@@ -2,83 +2,68 @@ import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://www.internationaltradeai.com'
-  const currentDate = new Date().toISOString()
+  const currentDate = new Date()
 
-  // Define all public pages with their priorities and change frequencies
-  const routes = [
-    {
-      url: `${baseUrl}/`,
-      lastModified: currentDate,
-      changeFrequency: 'weekly' as const,
-      priority: 1.0,
-    },
-    {
-      url: `${baseUrl}/about`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly' as const,
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/pricing`,
-      lastModified: currentDate,
-      changeFrequency: 'weekly' as const,
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/use-cases`,
-      lastModified: currentDate,
-      changeFrequency: 'weekly' as const,
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/how-it-works`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly' as const,
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/why-different`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly' as const,
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/faq`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly' as const,
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/contact`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly' as const,
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/chat`,
-      lastModified: currentDate,
-      changeFrequency: 'weekly' as const,
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/demo`,
-      lastModified: currentDate,
-      changeFrequency: 'weekly' as const,
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/verified-leads`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly' as const,
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/b2b-data`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly' as const,
-      priority: 0.7,
-    }
+  // Define page mappings between English and Turkish
+  const pageMapping = [
+    { en: '/', tr: '/tr', priority: 1.0, changeFreq: 'weekly' as const },
+    { en: '/about', tr: '/tr/hakkimizda', priority: 0.8, changeFreq: 'monthly' as const },
+    { en: '/pricing', tr: '/tr/fiyatlandirma', priority: 0.9, changeFreq: 'weekly' as const },
+    { en: '/use-cases', tr: '/tr/kullanim-alanlari', priority: 0.8, changeFreq: 'weekly' as const },
+    { en: '/how-it-works', tr: '/tr/nasil-calisir', priority: 0.8, changeFreq: 'monthly' as const },
+    { en: '/why-different', tr: '/tr/neden-farkli', priority: 0.7, changeFreq: 'monthly' as const },
+    { en: '/faq', tr: '/tr/sss', priority: 0.6, changeFreq: 'monthly' as const },
+    { en: '/contact', tr: '/tr/iletisim', priority: 0.7, changeFreq: 'monthly' as const },
+    { en: '/chat', tr: '/tr/sohbet', priority: 0.8, changeFreq: 'weekly' as const },
+    { en: '/demo', tr: '/tr/demo', priority: 0.8, changeFreq: 'weekly' as const },
+    { en: '/blog', tr: '/tr/blog', priority: 0.6, changeFreq: 'weekly' as const },
   ]
 
-  return routes
+  const sitemapEntries: MetadataRoute.Sitemap = []
+
+  // Add all English and Turkish pages
+  pageMapping.forEach(page => {
+    // English page
+    sitemapEntries.push({
+      url: `${baseUrl}${page.en}`,
+      lastModified: currentDate,
+      changeFrequency: page.changeFreq,
+      priority: page.priority,
+      alternates: {
+        languages: {
+          en: `${baseUrl}${page.en}`,
+          tr: `${baseUrl}${page.tr}`,
+        }
+      }
+    })
+
+    // Turkish page
+    sitemapEntries.push({
+      url: `${baseUrl}${page.tr}`,
+      lastModified: currentDate,
+      changeFrequency: page.changeFreq,
+      priority: page.priority,
+      alternates: {
+        languages: {
+          en: `${baseUrl}${page.en}`,
+          tr: `${baseUrl}${page.tr}`,
+        }
+      }
+    })
+  })
+
+  // Add Turkish-only page
+  sitemapEntries.push({
+    url: `${baseUrl}/tr/avantajlar`,
+    lastModified: currentDate,
+    changeFrequency: 'monthly',
+    priority: 0.7,
+    alternates: {
+      languages: {
+        tr: `${baseUrl}/tr/avantajlar`,
+      }
+    }
+  })
+
+  return sitemapEntries
 }

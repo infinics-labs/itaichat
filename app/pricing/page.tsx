@@ -6,6 +6,9 @@ import type { Metadata } from "next"
 export const metadata: Metadata = {
   title: "Pricing | Choose Your Perfect Export Plan",
   description: "Simple, transparent pricing for verified international buyers and clean B2B data. Starting Package, Plus Package, and Pro Plus Package options available.",
+  alternates: {
+    canonical: 'https://www.internationaltradeai.com/pricing'
+  },
 }
 
 export default function PricingPage() {

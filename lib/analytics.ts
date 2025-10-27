@@ -53,27 +53,69 @@ export const trackButtonClick = (eventData: AnalyticsEvent) => {
   }
 };
 
-// Track page views
-export const trackPageView = (pageName: string, pageTitle?: string) => {
+// Track page views with enhanced parameters
+export const trackPageView = (pageName: string, pageTitle?: string, pageType?: string) => {
   if (typeof window !== 'undefined' && window.gtag) {
+    const language = window.location.pathname.startsWith('/tr') ? 'tr' : 'en';
+    const isHomePage = window.location.pathname === '/' || window.location.pathname === '/tr';
+    
     window.gtag('config', 'G-75NPC5F8WZ', {
       page_title: pageTitle || pageName,
       page_location: window.location.href,
+      page_referrer: document.referrer,
       custom_map: {
-        custom_page_name: pageName
+        custom_page_name: pageName,
+        custom_page_type: pageType || (isHomePage ? 'homepage' : 'content'),
+        custom_language: language,
+        custom_page_category: getPageCategory(pageName)
       }
+    });
+    
+    // Send enhanced page view event
+    window.gtag('event', 'page_view', {
+      page_title: pageTitle || pageName,
+      page_location: window.location.href,
+      page_type: pageType || 'content',
+      user_language: language,
+      page_category: getPageCategory(pageName),
+      is_homepage: isHomePage
     });
   }
 };
 
-// Track form submissions
-export const trackFormSubmission = (formName: string, page: string) => {
+// Helper function to categorize pages for better analytics
+const getPageCategory = (pageName: string): string => {
+  if (pageName.includes('pricing') || pageName.includes('fiyatlandirma')) return 'pricing';
+  if (pageName.includes('demo') || pageName.includes('chat') || pageName.includes('sohbet')) return 'interactive';
+  if (pageName.includes('blog')) return 'content';
+  if (pageName.includes('contact') || pageName.includes('iletisim')) return 'contact';
+  if (pageName.includes('about') || pageName.includes('hakkimizda')) return 'about';
+  if (pageName.includes('faq') || pageName.includes('sss')) return 'support';
+  if (pageName.includes('use-cases') || pageName.includes('kullanim-alanlari')) return 'solutions';
+  return 'general';
+};
+
+// Track form submissions (Key Event in GA4)
+export const trackFormSubmission = (formName: string, page: string, formType?: string) => {
   if (typeof window !== 'undefined' && window.gtag) {
+    // Send as key event for GA4 conversion tracking
     window.gtag('event', 'form_submit', {
       event_category: 'form',
       event_label: formName,
       page: page,
-      form_name: formName
+      form_name: formName,
+      form_type: formType || 'contact',
+      value: 1, // Assign value for conversion tracking
+      // Mark as key event for GA4
+      send_to: 'G-75NPC5F8WZ'
+    });
+    
+    // Also send as conversion event
+    window.gtag('event', 'conversion', {
+      send_to: 'G-75NPC5F8WZ/form_submit',
+      event_category: 'conversion',
+      event_label: formName,
+      value: 1
     });
   }
 };
@@ -131,6 +173,63 @@ export const trackAccordionToggle = (eventData: {
         custom_page: eventData.page,
         custom_faq_question: eventData.faq_question
       }
+    });
+  }
+};
+
+// Track demo requests and lead generation
+export const trackDemoRequest = (eventData: {
+  page: string;
+  demo_type: 'live_demo' | 'chat_demo' | 'contact_form';
+  user_language?: string;
+}) => {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'generate_lead', {
+      event_category: 'conversion',
+      event_label: eventData.demo_type,
+      page: eventData.page,
+      demo_type: eventData.demo_type,
+      user_language: eventData.user_language || 'en',
+      value: 1 // Assign value for conversion tracking
+    });
+  }
+};
+
+// Track pricing page interactions
+export const trackPricingInteraction = (eventData: {
+  page: string;
+  plan_name: string;
+  action: 'view_plan' | 'select_plan' | 'compare_plans';
+  plan_price?: string;
+}) => {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'view_item', {
+      event_category: 'pricing',
+      event_label: eventData.plan_name,
+      page: eventData.page,
+      item_name: eventData.plan_name,
+      item_category: 'subscription_plan',
+      price: eventData.plan_price || '',
+      action_type: eventData.action
+    });
+  }
+};
+
+// Track blog engagement
+export const trackBlogEngagement = (eventData: {
+  page: string;
+  article_title: string;
+  action: 'read_start' | 'read_complete' | 'share' | 'scroll_depth';
+  scroll_percentage?: number;
+}) => {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'engagement', {
+      event_category: 'content',
+      event_label: eventData.article_title,
+      page: eventData.page,
+      article_title: eventData.article_title,
+      engagement_type: eventData.action,
+      scroll_percentage: eventData.scroll_percentage || 0
     });
   }
 };

@@ -9,11 +9,39 @@ import { CheckCircle, ArrowRight, Calendar } from "lucide-react"
 import { useRouter } from "next/navigation"
 import useConversationStore from "@/stores/useConversationStore"
 import { Item, processMessages } from "@/lib/assistant"
-import { trackCTAClick, trackExternalLink } from "@/lib/analytics"
+import { trackCTAClick } from "@/lib/analytics"
+import { useEffect } from "react"
 
 function DemoContent() {
   const router = useRouter()
   const { addConversationItem, addChatMessage, setAssistantLoading } = useConversationStore()
+
+  // Set document title and meta tags for client component
+  useEffect(() => {
+    document.title = "Demo | Experience ITAI's Export Assistant"
+    
+    // Set meta description
+    const metaDescription = document.querySelector('meta[name="description"]')
+    if (metaDescription) {
+      metaDescription.setAttribute('content', "Try ITAI's AI-powered platform and discover how to find verified international buyers and accelerate your export growth.")
+    } else {
+      const meta = document.createElement('meta')
+      meta.name = 'description'
+      meta.content = "Try ITAI's AI-powered platform and discover how to find verified international buyers and accelerate your export growth."
+      document.head.appendChild(meta)
+    }
+
+    // Set canonical URL
+    const existingCanonical = document.querySelector('link[rel="canonical"]')
+    if (existingCanonical) {
+      existingCanonical.setAttribute('href', 'https://www.internationaltradeai.com/demo')
+    } else {
+      const canonical = document.createElement('link')
+      canonical.rel = 'canonical'
+      canonical.href = 'https://www.internationaltradeai.com/demo'
+      document.head.appendChild(canonical)
+    }
+  }, [])
 
   const handleMessageSent = async (message: string) => {
     if (!message.trim()) return
@@ -143,10 +171,13 @@ function DemoContent() {
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a 
-                  href="https://calendly.com/itai-export/demo" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  onClick={() => trackExternalLink('https://calendly.com/itai-export/demo', 'Schedule Personal Demo', 'demo_page_cta')}
+                  href="/chat"
+                  onClick={() => trackCTAClick({
+                    page: 'demo',
+                    placement: 'demo_page_cta',
+                    button_text: 'Schedule Personal Demo',
+                    destination: '/chat'
+                  })}
                 >
                   <Button
                     size="lg"

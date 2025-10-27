@@ -4,6 +4,15 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Database, Shield, RefreshCw, CheckCircle } from "lucide-react"
 import Link from "next/link"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "B2B Data | Premium International Business Database",
+  description: "Access comprehensive B2B database with verified international contacts across 195+ countries. Quality-assured business data for export success.",
+  alternates: {
+    canonical: 'https://www.internationaltradeai.com/b2b-data'
+  },
+}
 
 export default function B2BDataPage() {
   const features = [
@@ -86,7 +95,7 @@ export default function B2BDataPage() {
                     Our customer leads database combines quality, coverage, and freshness to give you 
                     the best possible results for your B2B prospecting campaigns.
                   </p>
-                  <Link href="/demo">
+                  <Link href="/chat">
                     <Button
                       size="lg"
                       className="bg-gradient-to-r from-orange-500 to-blue-900 hover:from-orange-600 hover:to-blue-800 text-white px-8 py-4 text-lg font-semibold shadow-xl"

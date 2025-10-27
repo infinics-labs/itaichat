@@ -88,9 +88,7 @@ export function FAQSection() {
                 {t("faq.cta.description")}
               </p>
               <a 
-                href="https://calendly.com/mehmet-odsdanismanlik/30min"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/chat"
               >
               <Button
                 size="lg"

@@ -56,12 +56,12 @@ export function AboutSimpleSection() {
 
             <div className="pt-6">
               <Link 
-                href="/demo"
+                href="/chat"
                 onClick={() => trackCTAClick({
                   page: 'about',
                   placement: 'main_cta',
                   button_text: 'Book a live demo',
-                  destination: '/demo'
+                  destination: '/chat'
                 })}
               >
                 <Button

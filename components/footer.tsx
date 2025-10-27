@@ -35,14 +35,12 @@ export function Footer() {
               </p>
 
               <a 
-                href="https://calendly.com/mehmet-odsdanismanlik/30min"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/chat"
                 onClick={() => trackCTAClick({
                   page: 'home',
                   placement: 'footer_cta',
                   button_text: 'Book a live demo',
-                  destination: 'https://calendly.com/mehmet-odsdanismanlik/30min'
+                  destination: '/chat'
                 })}
               >
                 <Button
@@ -120,8 +118,8 @@ export function Footer() {
                   </a>
                 </li>
                 <li>
-                  <a href="#careers" className="hover:text-white transition-colors">
-                    {t("home.footer.links.careers")}
+                  <a href="/blog" className="hover:text-white transition-colors">
+                    {t("home.footer.links.blog")}
                   </a>
                 </li>
                 <li>

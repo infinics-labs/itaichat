@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Calendar, CheckCircle, X } from "lucide-react"
+import { Calendar, CheckCircle } from "lucide-react"
 import { trackCTAClick, trackFormSubmission } from "@/lib/analytics"
 import { useLanguage } from "@/contexts/language-context"
 
 export function ContactSection() {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -20,7 +20,6 @@ export function ContactSection() {
     targetCountries: '',
     notes: ''
   })
-  const [isSubmitted, setIsSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
@@ -56,16 +55,19 @@ export function ContactSection() {
       // Track form submission
       trackFormSubmission('demo_booking', 'contact')
       
+      // Determine redirect URL based on language
+      const redirectUrl = language === 'tr' ? '/tr/sohbet' : '/chat'
+      
       // Track CTA click
       trackCTAClick({
         page: 'contact',
         placement: 'form_submit',
         button_text: 'Book a live demo',
-        destination: 'thank_you'
+        destination: redirectUrl
       })
       
-      // Show success state
-      setIsSubmitted(true)
+      // Redirect to appropriate chat page based on language
+      window.location.href = redirectUrl
       
     } catch (error) {
       console.error('Form submission error:', error)
@@ -77,12 +79,12 @@ export function ContactSection() {
 
   const inlineFaq = [
     {
-      question: "What happens next?",
-      answer: "We&apos;ll review your information and send you a calendar link to schedule your personalized demo."
+      question: t("contact.faq.whatHappensNext.question"),
+      answer: t("contact.faq.whatHappensNext.answer")
     },
     {
-      question: "How long until I receive a preview?",
-      answer: "During the live demo (usually within 24-48 hours), we&apos;ll show you a curated sample of verified b2b contact data from your target markets."
+      question: t("contact.faq.howLongPreview.question"),
+      answer: t("contact.faq.howLongPreview.answer")
     }
   ]
 
@@ -143,7 +145,7 @@ export function ContactSection() {
 
                   <div>
                     <Label htmlFor="company" className="text-base font-medium text-gray-700">
-                      Company *
+                      {t("contact.form.fields.company")}
                     </Label>
                     <Input
                       id="company"
@@ -153,13 +155,13 @@ export function ContactSection() {
                       value={formData.company}
                       onChange={handleInputChange}
                       className="mt-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                      placeholder="Your company name"
+                      placeholder={t("contact.form.fields.companyPlaceholder")}
                     />
                   </div>
 
                   <div>
                     <Label htmlFor="productCategory" className="text-base font-medium text-gray-700">
-                      Product category *
+                      {t("contact.form.fields.productCategory")}
                     </Label>
                     <Input
                       id="productCategory"
@@ -169,13 +171,13 @@ export function ContactSection() {
                       value={formData.productCategory}
                       onChange={handleInputChange}
                       className="mt-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                      placeholder="e.g., Electronics, Medical Devices, Industrial Equipment"
+                      placeholder={t("contact.form.fields.productCategoryPlaceholder")}
                     />
                   </div>
 
                   <div>
                     <Label htmlFor="targetCountries" className="text-base font-medium text-gray-700">
-                      Target countries *
+                      {t("contact.form.fields.targetCountries")}
                     </Label>
                     <Input
                       id="targetCountries"
@@ -185,13 +187,13 @@ export function ContactSection() {
                       value={formData.targetCountries}
                       onChange={handleInputChange}
                       className="mt-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                      placeholder="e.g., USA, Germany, Japan, Brazil"
+                      placeholder={t("contact.form.fields.targetCountriesPlaceholder")}
                     />
                   </div>
 
                   <div>
                     <Label htmlFor="notes" className="text-base font-medium text-gray-700">
-                      Notes
+                      {t("contact.form.fields.notes")}
                     </Label>
                     <Textarea
                       id="notes"
@@ -200,7 +202,7 @@ export function ContactSection() {
                       value={formData.notes}
                       onChange={handleInputChange}
                       className="mt-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                      placeholder="Tell us more about your export goals, target buyer profile, or specific requirements..."
+                      placeholder={t("contact.form.fields.notesPlaceholder")}
                     />
                   </div>
 
@@ -277,61 +279,6 @@ export function ContactSection() {
           </div>
         </div>
 
-        {/* Thank You Popup */}
-        {isSubmitted && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="relative w-full max-w-md">
-              <Card className="border-0 shadow-2xl bg-white">
-                <CardContent className="p-8 text-center">
-                  <button
-                    onClick={() => window.location.href = '/'}
-                    className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
-                  >
-                    <X className="w-6 h-6" />
-                  </button>
-                  
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <CheckCircle className="w-8 h-8 text-green-600" />
-                  </div>
-                  
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                    Thank you!
-                  </h3>
-                  
-                  <p className="text-gray-600 mb-6">
-                    We&apos;ll send you a calendar link to schedule your personalized demo.
-                  </p>
-                  
-                  <div className="space-y-3">
-                    <a 
-                      href="https://calendly.com/mehmet-odsdanismanlik/30min"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block"
-                    >
-                      <Button
-                        size="lg"
-                        className="w-full bg-gradient-to-r from-orange-500 to-blue-900 hover:from-orange-600 hover:to-blue-800 text-white px-6 py-3 text-base font-semibold"
-                      >
-                        <Calendar className="w-4 h-4 mr-2" />
-                        Book Now on Calendly
-                      </Button>
-                    </a>
-                    
-                    <Button
-                      onClick={() => window.location.href = '/'}
-                      variant="outline"
-                      size="lg"
-                      className="w-full border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-6 py-3 text-base font-semibold"
-                    >
-                      Close & Return to Home
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        )}
       </div>
     </section>
   )

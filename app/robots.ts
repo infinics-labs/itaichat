@@ -14,7 +14,9 @@ export default function robots(): MetadataRoute.Robots {
           '/fonts/',
           '*.json',
           '*.xml',
-          '/advantages' // Redirect page, no need to index
+          '/advantages', // Redirect page, no need to index
+          '/tr/pricing', // Duplicate Turkish pricing page
+          '/tr/use-cases' // Duplicate Turkish use-cases page
         ],
       },
       {

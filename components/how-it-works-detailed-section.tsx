@@ -134,12 +134,12 @@ export function HowItWorksDetailedSection() {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link 
-                    href="/demo"
+                    href="/chat"
                     onClick={() => trackCTAClick({
                       page: 'how-it-works',
                       placement: 'primary_cta',
                       button_text: 'Book a live demo',
-                      destination: '/demo'
+                      destination: '/chat'
                     })}
                   >
                     <Button
@@ -151,12 +151,12 @@ export function HowItWorksDetailedSection() {
                   </Link>
                   
                   <Link 
-                    href="/demo"
+                    href="/chat"
                     onClick={() => trackCTAClick({
                       page: 'how-it-works',
                       placement: 'secondary_cta',
                       button_text: 'Request pricing in a live demo',
-                      destination: '/demo'
+                      destination: '/chat'
                     })}
                   >
                     <Button

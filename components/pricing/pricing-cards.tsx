@@ -174,12 +174,12 @@ export function PricingCards() {
                 </Button>
               ) : (
                 <Link 
-                  href="/demo"
+                  href="/chat"
                   onClick={() => trackCTAClick({
                     page: 'pricing',
                     placement: `${plan.name.toLowerCase().replace(/\s+/g, '_')}_card`,
                     button_text: `Get Started - ${plan.name}`,
-                    destination: '/demo'
+                    destination: '/chat'
                   })}
                 >
                   <Button

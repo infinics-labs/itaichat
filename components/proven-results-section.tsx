@@ -73,14 +73,12 @@ export function ProvenResultsSection() {
         {/* CTA Section */}
         <div className="text-center">
           <a 
-            href="https://calendly.com/mehmet-odsdanismanlik/30min"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/chat"
             onClick={() => trackCTAClick({
               page: 'home',
               placement: 'results',
               button_text: 'Book a live demo',
-              destination: 'https://calendly.com/mehmet-odsdanismanlik/30min'
+              destination: '/chat'
             })}
           >
             <Button

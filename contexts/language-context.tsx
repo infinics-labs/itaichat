@@ -40,6 +40,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       '/tr/b2b-veri': '/b2b-data',
       '/tr/sohbet': '/chat',
       '/tr/demo': '/demo',
+      '/tr/blog': '/blog',
       '/tr': '/'
     }
 
@@ -56,6 +57,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       '/b2b-data': '/tr/b2b-veri',
       '/chat': '/tr/sohbet',
       '/demo': '/tr/demo',
+      '/blog': '/tr/blog',
       '/': '/tr'
     }
     

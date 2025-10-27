@@ -4,6 +4,15 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Database, Shield, RefreshCw, CheckCircle } from "lucide-react"
 import Link from "next/link"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "B2B Verisi | Premium Uluslararası İş Veritabanı",
+  description: "195+ ülkede doğrulanmış uluslararası iletişim bilgileriyle kapsamlı B2B veritabanına erişin. İhracat başarısı için kalite güvenceli iş verileri.",
+  alternates: {
+    canonical: 'https://www.internationaltradeai.com/tr/b2b-veri'
+  },
+}
 
 export default function TurkishB2BDataPage() {
   const features = [
@@ -86,7 +95,7 @@ export default function TurkishB2BDataPage() {
                     Müşteri adayları veritabanımız B2B müşteri adayı bulma kampanyalarınız için 
                     mümkün olan en iyi sonuçları vermek üzere kalite, kapsam ve tazeliği birleştirir.
                   </p>
-                  <Link href="/tr/demo">
+                  <Link href="/tr/sohbet">
                     <Button
                       size="lg"
                       className="bg-gradient-to-r from-orange-500 to-blue-900 hover:from-orange-600 hover:to-blue-800 text-white px-8 py-4 text-lg font-semibold shadow-xl"

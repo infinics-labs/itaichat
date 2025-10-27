@@ -6,6 +6,9 @@ import type { Metadata } from "next"
 export const metadata: Metadata = {
   title: "ITAI Nasıl Çalışır | ICP'den Doğrulanmış Müşteri Adaylarına",
   description: "İdeal alıcınızı tanımlayın, karar verici e-postalarıyla doğrulanmış müşteri adayları alın ve yeni pazarlarda nitelikli toplantılar ayarlamaya başlayın.",
+  alternates: {
+    canonical: 'https://www.internationaltradeai.com/tr/nasil-calisir'
+  },
 }
 
 export default function TurkishHowItWorksPage() {

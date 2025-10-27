@@ -9,11 +9,39 @@ import { CheckCircle, ArrowRight, Calendar } from "lucide-react"
 import { useRouter } from "next/navigation"
 import useConversationStore from "@/stores/useConversationStore"
 import { Item, processMessages } from "@/lib/assistant"
-import { trackCTAClick, trackExternalLink } from "@/lib/analytics"
+import { trackCTAClick } from "@/lib/analytics"
+import { useEffect } from "react"
 
 function TurkishDemoContent() {
   const router = useRouter()
   const { addConversationItem, addChatMessage, setAssistantLoading } = useConversationStore()
+
+  // Set document title and meta tags for client component
+  useEffect(() => {
+    document.title = "Demo | ITAI'nin İhracat Asistanını Deneyimleyin"
+    
+    // Set meta description
+    const metaDescription = document.querySelector('meta[name="description"]')
+    if (metaDescription) {
+      metaDescription.setAttribute('content', "ITAI'nin yapay zeka destekli platformunu deneyin ve doğrulanmış uluslararası alıcıları nasıl bulacağınızı ve ihracat büyümenizi nasıl hızlandıracağınızı keşfedin.")
+    } else {
+      const meta = document.createElement('meta')
+      meta.name = 'description'
+      meta.content = "ITAI'nin yapay zeka destekli platformunu deneyin ve doğrulanmış uluslararası alıcıları nasıl bulacağınızı ve ihracat büyümenizi nasıl hızlandıracağınızı keşfedin."
+      document.head.appendChild(meta)
+    }
+
+    // Set canonical URL
+    const existingCanonical = document.querySelector('link[rel="canonical"]')
+    if (existingCanonical) {
+      existingCanonical.setAttribute('href', 'https://www.internationaltradeai.com/tr/demo')
+    } else {
+      const canonical = document.createElement('link')
+      canonical.rel = 'canonical'
+      canonical.href = 'https://www.internationaltradeai.com/tr/demo'
+      document.head.appendChild(canonical)
+    }
+  }, [])
 
   const handleMessageSent = async (message: string) => {
     if (!message.trim()) return
@@ -144,10 +172,13 @@ function TurkishDemoContent() {
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a 
-                  href="https://calendly.com/mehmet-odsdanismanlik/30min" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  onClick={() => trackExternalLink('https://calendly.com/mehmet-odsdanismanlik/30min', 'Kişisel Demo Planla', 'demo_page_cta')}
+                  href="/tr/sohbet"
+                  onClick={() => trackCTAClick({
+                    page: 'demo',
+                    placement: 'demo_page_cta',
+                    button_text: 'Kişisel Demo Planla',
+                    destination: '/tr/sohbet'
+                  })}
                 >
                   <Button
                     size="lg"

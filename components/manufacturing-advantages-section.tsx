@@ -102,14 +102,12 @@ export function ManufacturingAdvantagesSection() {
           {/* Top CTAs */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <a 
-              href="https://calendly.com/mehmet-odsdanismanlik/30min"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/chat"
               onClick={() => trackCTAClick({
                 page: 'advantages',
                 placement: 'hero_primary',
                 button_text: 'Book a live demo',
-                destination: 'https://calendly.com/mehmet-odsdanismanlik/30min'
+                destination: '/chat'
               })}
             >
               <Button
@@ -121,14 +119,12 @@ export function ManufacturingAdvantagesSection() {
             </a>
             
             <a 
-              href="https://calendly.com/mehmet-odsdanismanlik/30min"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/chat"
               onClick={() => trackCTAClick({
                 page: 'advantages',
                 placement: 'hero_secondary',
                 button_text: 'Request pricing in a live demo',
-                destination: 'https://calendly.com/mehmet-odsdanismanlik/30min'
+                destination: '/chat'
               })}
             >
               <Button
@@ -155,14 +151,12 @@ export function ManufacturingAdvantagesSection() {
                   {t(type.descriptionKey)}
                 </p>
                 <a 
-                  href="https://calendly.com/mehmet-odsdanismanlik/30min"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/chat"
                   onClick={() => trackCTAClick({
                     page: 'advantages',
                     placement: `section_${index + 1}`,
                     button_text: 'Book a live demo',
-                    destination: 'https://calendly.com/mehmet-odsdanismanlik/30min'
+                    destination: '/chat'
                   })}
                 >
                   <Button
@@ -210,14 +204,12 @@ export function ManufacturingAdvantagesSection() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a 
-                  href="https://calendly.com/mehmet-odsdanismanlik/30min"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/chat"
                   onClick={() => trackCTAClick({
                     page: 'advantages',
                     placement: 'bottom_primary',
                     button_text: 'Book a live demo',
-                    destination: 'https://calendly.com/mehmet-odsdanismanlik/30min'
+                    destination: '/chat'
                   })}
                 >
                   <Button
@@ -229,14 +221,12 @@ export function ManufacturingAdvantagesSection() {
                 </a>
                 
                 <a 
-                  href="https://calendly.com/mehmet-odsdanismanlik/30min"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/chat"
                   onClick={() => trackCTAClick({
                     page: 'advantages',
                     placement: 'bottom_secondary',
                     button_text: 'Request pricing in a live demo',
-                    destination: 'https://calendly.com/mehmet-odsdanismanlik/30min'
+                    destination: '/chat'
                   })}
                 >
                   <Button

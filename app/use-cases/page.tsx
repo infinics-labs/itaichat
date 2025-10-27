@@ -6,6 +6,9 @@ import type { Metadata } from "next"
 export const metadata: Metadata = {
   title: "Use Cases | Manufacturing, Electronics, Pharma, Medical Devices",
   description: "See how manufacturers use ITAI to find and verify international buyers and book qualified meetings.",
+  alternates: {
+    canonical: 'https://www.internationaltradeai.com/use-cases'
+  },
 }
 
 export default function UseCasesPage() {

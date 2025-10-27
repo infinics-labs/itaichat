@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     icon: "/logo.png",
   },
   alternates: {
-    canonical: '/tr'
+    canonical: 'https://www.internationaltradeai.com/tr'
   },
   openGraph: {
     title: "Doğrulanmış Uluslararası Alıcıları Bulun | ITAI İhracat Asistanı",

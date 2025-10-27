@@ -153,12 +153,12 @@ export function PricingDetailedSection() {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link 
-                    href="/demo"
+                    href="/chat"
                     onClick={() => trackCTAClick({
                       page: 'pricing',
                       placement: 'primary_cta',
                       button_text: 'Request pricing in a live demo',
-                      destination: '/demo'
+                      destination: '/chat'
                     })}
                   >
                     <Button
@@ -170,12 +170,12 @@ export function PricingDetailedSection() {
                   </Link>
                   
                   <Link 
-                    href="/demo"
+                    href="/chat"
                     onClick={() => trackCTAClick({
                       page: 'pricing',
                       placement: 'secondary_cta',
                       button_text: 'Book a live demo',
-                      destination: '/demo'
+                      destination: '/chat'
                     })}
                   >
                     <Button
