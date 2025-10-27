@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Calendar, CheckCircle } from "lucide-react"
+import { Calendar, CheckCircle, X } from "lucide-react"
 import { trackCTAClick, trackFormSubmission } from "@/lib/analytics"
 import { useLanguage } from "@/contexts/language-context"
 
@@ -20,6 +20,7 @@ export function ContactSection() {
     targetCountries: '',
     notes: ''
   })
+  const [isSubmitted, setIsSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
@@ -55,19 +56,16 @@ export function ContactSection() {
       // Track form submission
       trackFormSubmission('demo_booking', 'contact')
       
-      // Determine redirect URL based on language
-      const redirectUrl = language === 'tr' ? '/tr/sohbet' : '/chat'
-      
       // Track CTA click
       trackCTAClick({
         page: 'contact',
         placement: 'form_submit',
         button_text: 'Book a live demo',
-        destination: redirectUrl
+        destination: 'success_popup'
       })
       
-      // Redirect to appropriate chat page based on language
-      window.location.href = redirectUrl
+      // Show success popup instead of redirecting
+      setIsSubmitted(true)
       
     } catch (error) {
       console.error('Form submission error:', error)
@@ -280,6 +278,59 @@ export function ContactSection() {
         </div>
 
       </div>
+
+      {/* Success Popup */}
+      {isSubmitted && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="relative w-full max-w-md">
+            <Card className="border-0 shadow-2xl bg-white">
+              <CardContent className="p-8 text-center">
+                <button
+                  onClick={() => setIsSubmitted(false)}
+                  className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+                
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <CheckCircle className="w-8 h-8 text-green-600" />
+                </div>
+                
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                  {t("contact.form.success.title")}
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  {t("contact.form.success.message")}
+                </p>
+                
+                <div className="space-y-3">
+                  <a 
+                    href={language === 'tr' ? '/tr/sohbet' : '/chat'}
+                    className="block"
+                  >
+                    <Button
+                      size="lg"
+                      className="w-full bg-gradient-to-r from-orange-500 to-blue-900 hover:from-orange-600 hover:to-blue-800 text-white px-6 py-3 text-base font-semibold"
+                    >
+                      <Calendar className="w-4 h-4 mr-2" />
+                      {t("contact.form.button")}
+                    </Button>
+                  </a>
+                  
+                  <Button
+                    onClick={() => setIsSubmitted(false)}
+                    variant="outline"
+                    size="lg"
+                    className="w-full border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-6 py-3 text-base font-semibold"
+                  >
+                    {t("contact.form.success.backButton")}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      )}
     </section>
   )
 }
