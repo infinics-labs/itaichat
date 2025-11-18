@@ -4,14 +4,14 @@ import { Chat2Interface } from "@/components/chat2/chat2-interface"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Yapay Zeka İhracat Sohbeti | ITAI Asistanıyla Konuşun",
-  description: "İhracat fırsatlarını keşfetmek ve uluslararası alıcılar için kişiselleştirilmiş öneriler almak için ITAI'nin yapay zeka asistanıyla sohbet edin.",
+  title: "AI İhracat Sohbet v2 | ITAI Asistan",
+  description: "İhracat fırsatlarını keşfetmek ve uluslararası alıcılar için kişiselleştirilmiş öneriler almak için ITAI'nin AI asistanıyla sohbet edin.",
   alternates: {
-    canonical: 'https://www.internationaltradeai.com/tr/sohbet'
+    canonical: 'https://www.internationaltradeai.com/tr/sohbet2'
   },
 }
 
-export default function TurkishChatPage() {
+export default function TrChat2Page() {
   return (
     <div className="min-h-screen bg-white">
       <Header />
