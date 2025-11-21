@@ -98,10 +98,10 @@ export function Header() {
               </Button>
             </Link>
             <a 
-              href="https://main.d1sdaz41inqvnc.amplifyapp.com/"
+              href="https://app.internationaltradeai.com/"
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => trackExternalLink('https://main.d1sdaz41inqvnc.amplifyapp.com/', 'Sign In', 'header_signin')}
+              onClick={() => trackExternalLink('https://app.internationaltradeai.com/', 'Sign In', 'header_signin')}
             >
               <Button size="sm" className="bg-gradient-to-r from-orange-500 to-blue-900 hover:from-orange-600 hover:to-blue-800 text-white shadow-lg text-xs lg:text-sm px-3 lg:px-4 py-2 whitespace-nowrap">
                 {t("header.buttons.signIn")}
