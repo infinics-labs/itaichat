@@ -60,6 +60,7 @@ Thumbs.db
 logs
 *.log
 npm-debug.log*
+pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
@@ -102,7 +103,7 @@ jspm_packages/
 # Yarn Integrity file
 .yarn-integrity
 
-# parcel-bundler cache (https://parceljs.org/)
+# parcel-bundler cache
 .cache
 .parcel-cache
 
@@ -116,7 +117,7 @@ dist
 # Gatsby files
 .cache/
 
-# Storybook build outputs
+# Storybook outputs
 .out
 .storybook-out
 
@@ -160,7 +161,7 @@ Desktop.ini
 *.backup
 *.old
 
-# Package manager lock files (keep package-lock.json)
+# Package manager lock files
 # yarn.lock
 # pnpm-lock.yaml
 
@@ -172,12 +173,12 @@ Desktop.ini
 *.weights
 *.h5
 
-# Custom application files that might contain sensitive data
+# Sensitive dirs
 secrets/
 private/
 confidential/
 
-# API keys and sensitive configuration
+# API keys and sensitive config
 .env*
 !.env.example
 config.local.js
