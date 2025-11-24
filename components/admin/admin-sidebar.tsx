@@ -14,7 +14,8 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   LogOutIcon,
-  BarChart3Icon
+  BarChart3Icon,
+  FileTextIcon
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -42,6 +43,11 @@ const sidebarItems: SidebarItem[] = [
     href: '/admin/contact-submissions',
     icon: MailIcon,
     badge: 'New',
+  },
+  {
+    name: 'Demo Requests',
+    href: '/admin/demo-requests',
+    icon: FileTextIcon,
   },
   {
     name: 'Users',

@@ -48,3 +48,16 @@ export interface ContactSubmission {
   follow_up_notes?: string
   admin_notes?: string
 }
+
+export interface DemoRequest {
+  id?: string
+  uuid?: string
+  name: string
+  email: string
+  company: string
+  product_category: string
+  target_countries: string
+  notes?: string
+  created_at?: string
+  updated_at?: string
+}
